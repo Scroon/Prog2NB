@@ -1,3 +1,0 @@
-# Prog2NB
-
-beadandó

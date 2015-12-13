@@ -1,6 +1,0 @@
-#ifndef CITY_H_INCLUDED
-#define CITY_H_INCLUDED
-
-
-
-#endif // CITY_H_INCLUDED
