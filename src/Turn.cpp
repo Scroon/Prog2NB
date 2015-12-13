@@ -18,9 +18,22 @@ int Turn::GetTravellTime() const
 int Turn::GetAllPrority() const
 {
     int sum = 0;
-    for(int i = 0 : loads.size())
+    for(unsigned int i = 0; i < loads.size(); i++)
     {
         sum += loads[i].first;
     }
     return sum;
+}
+
+void Turn::AddLoad(Load *l)
+{
+    for(unsigned int i = 0; i < loads.size(); i++)
+    {
+        if(loads[i].second == l)
+        {
+            loads[i].first++;
+            return;
+        }
+    }
+    loads.push_back(pair< int,Load* >(0,l));
 }
