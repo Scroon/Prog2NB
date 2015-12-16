@@ -2,12 +2,11 @@
 #define TURN_HPP
 
 #include "City.hpp"
+#include "Load.hpp"
 
 #include <vector>
 
 using namespace std;
-
-class Load;
 
 class Turn
 {
@@ -16,7 +15,7 @@ class Turn
         virtual ~Turn();
 
         int GetTravellTime () const;
-        int GetAllPriority() const;
+        int GetAllPrority() const;
 
         void AddLoad(Load *l);
 
