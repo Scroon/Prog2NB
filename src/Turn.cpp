@@ -15,7 +15,7 @@ int Turn::GetTravellTime() const
     return endday-startday;
 }
 
-int Turn::GetAllPrority() const
+int Turn::GetAllPriority() const
 {
     int sum = 0;
     for(unsigned int i = 0; i < loads.size(); i++)
