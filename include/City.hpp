@@ -8,6 +8,9 @@ class City
         City();
         virtual ~City();
     protected:
+    
+    int ID;
+    
     private:
 };
 
