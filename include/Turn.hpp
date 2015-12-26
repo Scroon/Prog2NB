@@ -4,6 +4,7 @@
 #include "City.hpp"
 
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -12,23 +13,23 @@ class Load;
 class Turn
 {
     public:
-        Turn();
+        Turn(City * _from, City * to, const int _startday, const int endday);
         virtual ~Turn();
 
         int GetTravellTime () const;
         int GetAllPriority() const;
 
-        void AddLoad(Load *l);
+        void AddLoad();
 
     protected:
-
-        vector< pair< int, Load* > >  loads;
 
         City * from;
         City * to;
 
         int startday;
         int endday;
+
+        int priority;
 
     private:
 };

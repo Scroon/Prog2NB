@@ -1,6 +1,6 @@
 #include "Turn.hpp"
 
-Turn::Turn()
+Turn::Turn(City *_from, City *_to, const int _startday, const int _endday) : from(_from), to(_to), startday(_startday), endday(_endday)
 {
     //ctor
 }
@@ -17,23 +17,10 @@ int Turn::GetTravellTime() const
 
 int Turn::GetAllPriority() const
 {
-    int sum = 0;
-    for(unsigned int i = 0; i < loads.size(); i++)
-    {
-        sum += loads[i].first;
-    }
-    return sum;
+    return priority;
 }
 
-void Turn::AddLoad(Load *l)
+void Turn::AddLoad()
 {
-    for(unsigned int i = 0; i < loads.size(); i++)
-    {
-        if(loads[i].second == l)
-        {
-            loads[i].first++;
-            return;
-        }
-    }
-    loads.push_back(pair< int,Load* >(0,l));
+    priority++;
 }

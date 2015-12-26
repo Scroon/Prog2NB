@@ -4,6 +4,7 @@
 #include "Ship.hpp"
 
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
