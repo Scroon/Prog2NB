@@ -8,12 +8,10 @@
 
 using namespace std;
 
-class Load;
-
 class Turn
 {
     public:
-        Turn(City * _from, City * to, const int _startday, const int endday);
+        Turn(City * _from, City * _to, const int _startday, const int _endday);
         virtual ~Turn();
 
         int GetTravellTime () const;

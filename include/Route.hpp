@@ -8,10 +8,10 @@
 
 using namespace std;
 
-class Route
+class Route : public Turn
 {
     public:
-        Route();
+        Route(City * _from, City * _to, const int _startday, const int _endday);
         virtual ~Route();
 
         int GetRoutePriority();

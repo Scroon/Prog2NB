@@ -1,6 +1,6 @@
 #include "Route.hpp"
 
-Route::Route()
+Route::Route(City * _from, City * _to, const int _startday, const int _endday) : Turn(_from,_to,_startday,_endday)
 {
     //ctor
 }

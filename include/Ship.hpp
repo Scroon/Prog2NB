@@ -1,9 +1,10 @@
 #ifndef SHIP_HPP
 #define SHIP_HPP
 
+#include "City.hpp"
 #include "Turn.hpp"
 
-#include <vector>
+#include <map>
 #include <iostream>
 
 using namespace std;
@@ -12,10 +13,12 @@ class Ship
 {
     public:
 
-        Ship();
+        Ship(const string _name, City* &_from, City* &_to, const int _startday, const int _days_there, const int _days_back, const int _capacity);
         virtual ~Ship();
 
         Turn* GetTurn( const int index );
+
+        void AddToCity();
 
     protected:
 
@@ -27,8 +30,9 @@ class Ship
         int startday;
         int days_there;
         int days_back;
+        int capacity;
 
-        vector<Turn*> turns;
+        map< int, Turn* > turns;
 
     private:
 };
