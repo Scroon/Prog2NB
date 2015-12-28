@@ -16,6 +16,10 @@ class Load
         Load(const int _amount, const int _bonus_time, const string _name, City* _from, City* _to);
         virtual ~Load();
 
+        int GetID () const { return ID; }
+
+
+
         static int NextID()
         {
             next_ID++;
@@ -36,7 +40,7 @@ class Load
 
         int ID;
 
-        vector<Route> routes;
+        vector< Route* > routes;
 
     private:
 };

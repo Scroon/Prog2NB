@@ -15,12 +15,7 @@ int Turn::GetTravellTime() const
     return endday-startday;
 }
 
-int Turn::GetAllPriority() const
+int Turn::GetPriority() const
 {
     return priority;
-}
-
-void Turn::AddLoad()
-{
-    priority++;
 }

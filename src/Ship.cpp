@@ -13,7 +13,15 @@ Ship::~Ship()
 
 Turn* Ship::GetTurn( const int index)
 {
-    return turns[index];
+    if(turns.find(index) == turns.end())
+    {
+        int start_day = startday+(index%2)*(days_there)+(index/2)*(days_back+days_there);
+        int end_day = startday+((1+index)%2)*(days_there)+((1+index)/2)*(days_back+days_there);
+
+        turns[index] = new Turn(from,to,start_day,end_day);
+    }
+
+    return turns.find(index)->second;
 }
 
 void Ship::AddToCity()

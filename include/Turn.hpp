@@ -14,10 +14,13 @@ class Turn
         Turn(City * _from, City * _to, const int _startday, const int _endday);
         virtual ~Turn();
 
-        int GetTravellTime () const;
-        int GetAllPriority() const;
+        int GetTravellTime() const;
+        int GetStartDay() const { return startday; }
+        int GetEndDay() const { return endday; }
+        City* GetStartCity() { return from; }
+        City* GetEndCity() { return to; }
 
-        void AddLoad();
+        virtual int GetPriority() const;
 
     protected:
 

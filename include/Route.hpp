@@ -11,11 +11,12 @@ using namespace std;
 class Route : public Turn
 {
     public:
-        Route(City * _from, City * _to, const int _startday, const int _endday);
+        Route(City * _from);
         virtual ~Route();
 
-        int GetRoutePriority();
+        int GetPriority() const;
 
+        void AddTurn( int turn_number, Ship* ship );
 
     protected:
 
