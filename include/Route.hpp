@@ -15,6 +15,7 @@ class Route : public Turn
         virtual ~Route();
 
         int GetPriority() const;
+        bool TravellPass( City* c);
 
         void AddTurn( int turn_number, Ship* ship );
 

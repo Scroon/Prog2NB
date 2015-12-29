@@ -16,6 +16,9 @@ class City
 
         void AddToShip( const string name);
         void AddFromShip( const string name);
+        string GetName() const { return name; };
+        vector<string> GetFromShipsName() const { return ships_name_from; }
+        vector<string> GetToShipsName() const { return ships_name_to; }
 
     protected:
 

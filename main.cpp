@@ -61,6 +61,19 @@ public:
                     }
                     s.push_back(str.substr(k,str.length()-k));
 
+/*
+                    cout << endl;
+                    cout << s[0] << endl;
+                    cout << s[1] << endl;
+                    cout << s[2] << endl;
+                    cout << s[3] << endl;
+                    cout << s[4] << endl;
+                    cout << s[5] << endl;
+                    cout << s[6] << endl;
+                    cout << endl;
+*/
+
+
                     if( cities.find(s[2]) == cities.end() ) {
                         cities[s[2]] = new City(s[2]);
                     }
@@ -115,9 +128,19 @@ public:
                     }
                     s.push_back(str.substr(k,str.length()-k));
 
+/*
+                    cout << endl;
+                    cout << s[0] << endl;
+                    cout << s[1] << endl;
+                    cout << s[2] << endl;
+                    cout << s[3] << endl;
+                    cout << s[4] << endl;
+                    cout << endl;
+*/
+
                     Load * load = new Load(convertToInt(s[1]),convertToInt(s[4]),s[0],cities.find(s[2])->second,cities.find(s[3])->second);
 
-                    loads[load->GetID()] = load;
+                    loads.push_back(load);
                 }
 
                 getline(cargo,str);
@@ -131,8 +154,44 @@ public:
         cargo.close();
     }
 
+    void SetAllPossibleRoute ()
+    {
+        /*
+        for(size_t i = 0; i < loads.size(); i++)
+        {
+            loads[i]->AddRoute(ships);
+        }
+        */
+        cout << ships.find("13489")->second->GetStartCity()->GetName() << endl;
+        cout << ships.find("13489")->second->GetEndCity()->GetName() << endl;
+
+        loads[10]->AddRoute(ships);
+    }
+
     void Teszt()
     {
+        for( size_t j = 0; j < loads.size(); j++)
+        {
+            cout << loads[j]->GetStartCity()->GetName() << endl;
+            cout << endl;
+
+            for( size_t i = 0; i < cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShipsName().size(); i++)
+            {
+                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShipsName()[i])->second->GetName() << "  ";
+                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShipsName()[i])->second->GetStartCity()->GetName() << "  ";
+                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShipsName()[i])->second->GetEndCity()->GetName() << endl;
+                cout << endl;
+            }
+            for( size_t i = 0; i < cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShipsName().size(); i++)
+            {
+                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShipsName()[i])->second->GetName() << "  ";
+                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShipsName()[i])->second->GetStartCity()->GetName() << "  ";
+                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShipsName()[i])->second->GetEndCity()->GetName() << endl;
+                cout << endl;
+            }
+        }
+
+        cout << endl;
         cout << cities.size() << endl;
         cout << ships.size() << endl;
         cout << loads.size() << endl;
@@ -142,7 +201,7 @@ protected:
 
     map< string, City* > cities;
     map< string, Ship* > ships;
-    map< int, Load* > loads;
+    vector< Load* > loads;
 
     string GetFileName() {
         string ret;
@@ -152,7 +211,7 @@ protected:
     }
 };
 
-int Load::next_ID = 0;
+int Load::next_ID = -1;
 
 int main()
 {
@@ -163,7 +222,9 @@ int main()
     TP.ReadSchedule();
     TP.ReadCargo();
 
-    TP.Teszt();
+    TP.SetAllPossibleRoute();
+
+    //TP.Teszt();
 
 
     return 0;

@@ -4,6 +4,7 @@
 #include "City.hpp"
 #include "Route.hpp"
 
+#include <map>
 #include <vector>
 #include <iostream>
 
@@ -16,9 +17,11 @@ class Load
         Load(const int _amount, const int _bonus_time, const string _name, City* _from, City* _to);
         virtual ~Load();
 
-        int GetID () const { return ID; }
+        int GetID() const { return ID; }
 
-
+        City* GetStartCity() { return from; }
+        City* GetEndCity() { return to; }
+        void AddRoute(map<string, Ship*> ships );
 
         static int NextID()
         {
@@ -41,6 +44,9 @@ class Load
         int ID;
 
         vector< Route* > routes;
+
+        void BuildRoute( Route r, vector<string> ships_from, vector<string> ships_to, map<string, Ship*> ships);
+
 
     private:
 };
