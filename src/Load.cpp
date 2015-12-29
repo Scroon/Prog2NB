@@ -14,34 +14,55 @@ void Load::AddRoute(map<string, Ship*> ships )
 {
     Route * route = new Route(from);
 
+    cout << endl;
     cout << "Honnan: " << from->GetName() << " Hova: " << to->GetName() << endl;
+    cout << endl;
 
-    BuildRoute( *route, route->GetEndCity()->GetFromShipsName(), route->GetEndCity()->GetToShipsName(), ships);
+    BuildRoute( route, route->GetEndCity()->GetFromShipsName(), route->GetEndCity()->GetToShipsName(), ships);
+
+    delete route;
 }
 
-void Load::BuildRoute(Route r, vector<string> ships_from, vector<string> ships_to,  map< string, Ship* > ships )
+void Load::BuildRoute(Route * r, vector<string> ships_from, vector<string> ships_to,  map< string, Ship* > ships )
 {
     for( size_t i = 0; i < ships_from.size(); i++) {
 
-        cout << ships_from[i] << " ";
+        cout << ships_from.size() << " " << ships_from[i] << " ";
+        cout << ships.find(ships_from[i])->second->GetStartCity()->GetName() << " ";
         cout << ships.find(ships_from[i])->second->GetEndCity()->GetName() << endl;
 
-        if( !r.TravellPass(ships.find(ships_from[i])->second->GetEndCity()) )
+        if( !r->TravellPass(ships.find(ships_from[i])->second->GetEndCity()) )
         {
             int k = 0;
+
+            cout << ships.find(ships_from[i])->second->GetTurn(k)->GetEndDay() << " ";
+            cout << bonus_time << " " << k << endl;
+
             while(ships.find(ships_from[i])->second->GetTurn(k)->GetEndDay() <= bonus_time)
             {
-                if(ships.find(ships_from[i])->second->GetTurn(k)->GetStartDay() >= r.GetEndDay())
-                {
-                    r.AddTurn(k,ships.find(ships_from[i])->second);
+                cout << ships.find(ships_from[i])->second->GetTurn(k)->GetStartDay() << " ";
+                cout << r->GetEndDay() << endl;
 
-                    if(r.GetEndCity() == to) routes.push_back(&r);
-                    else BuildRoute(r,r.GetEndCity()->GetFromShipsName(),r.GetEndCity()->GetToShipsName(),ships);
+                if(ships.find(ships_from[i])->second->GetTurn(k)->GetStartDay() >= r->GetEndDay())
+                {
+                    Route * route = r->Copy();
+
+                    route->AddTurn(k,ships.find(ships_from[i])->second);
+
+                    if(route->GetEndCity() == to) routes.push_back(r);
+                    else BuildRoute(route,route->GetEndCity()->GetFromShipsName(),route->GetEndCity()->GetToShipsName(),ships);
+
+
                 }
-                cout << k << endl;
                 k=k+2;
+
+                cout << ships.find(ships_from[i])->second->GetTurn(k)->GetEndDay() << " ";
+                cout << bonus_time << " " << k << endl;
+
             }
         }
+        else delete r;
+        cout << endl;
     }
 /*
     for( size_t i = 0; i < ships_to.size(); i++) {

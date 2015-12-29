@@ -45,7 +45,7 @@ class Load
 
         vector< Route* > routes;
 
-        void BuildRoute( Route r, vector<string> ships_from, vector<string> ships_to, map<string, Ship*> ships);
+        void BuildRoute( Route * r, vector<string> ships_from, vector<string> ships_to, map<string, Ship*> ships);
 
 
     private:

@@ -5,6 +5,11 @@ Route::Route(City * _from) : Turn(_from,_from,0,0)
     //ctor
 }
 
+Route::Route(City * _from, City * _to, int _startday, int _endday, vector< pair< int, Ship* > > _turns) : Turn(_from,_from,_startday,_endday), turns(_turns)
+{
+    //ctor
+}
+
 Route::~Route()
 {
     //dtor
@@ -31,7 +36,8 @@ void Route::AddTurn(int turn_number, Ship* ship)
 
     startday = turns[0].second->GetTurn(turns[0].first)->GetStartDay();
     endday = turns[turns.size()-1].second->GetTurn(turns[turns.size()-1].first)->GetEndDay();
-    from = turns[turns.size()-1].second->GetTurn(turns[turns.size()-1].first)->GetEndCity();
+
+    to = turns[turns.size()-1].second->GetTurn(turns[turns.size()-1].first)->GetEndCity();
 }
 
 bool Route::TravellPass(City* c)
@@ -56,3 +62,10 @@ bool Route::TravellPass(City* c)
     cout << endl;
     return false;
 }
+
+Route* Route::Copy()
+{
+    Route* route = new Route(from,to,startday,endday,turns);
+    return route;
+}
+

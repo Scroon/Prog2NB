@@ -162,8 +162,6 @@ public:
             loads[i]->AddRoute(ships);
         }
         */
-        cout << ships.find("13489")->second->GetStartCity()->GetName() << endl;
-        cout << ships.find("13489")->second->GetEndCity()->GetName() << endl;
 
         loads[10]->AddRoute(ships);
     }
