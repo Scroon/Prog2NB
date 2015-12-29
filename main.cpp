@@ -33,6 +33,25 @@ class Transport
 public:
     Transport() {}
 
+    void writecommands(){
+
+        ofstream commands_file;
+        commands_file.open(GetFileName().c_str());
+
+        if(commands_file.good()){
+
+            for(unsigned int i=0;i<commands.size();i++){
+
+                commands_file << commands[i];
+
+            }
+
+        }
+
+        commands_file.close
+
+    }
+
     void ReadSchedule()
     {
         ifstream schedule;
@@ -143,6 +162,8 @@ protected:
     map< string, City* > cities;
     map< string, Ship* > ships;
     map< int, Load* > loads;
+
+    vector<string> commands;
 
     string GetFileName() {
         string ret;
