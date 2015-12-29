@@ -1,11 +1,11 @@
 #include "Route.hpp"
 
-Route::Route(City * _from) : Turn(_from,_from,0,0)
+Route::Route(City * _from) : Turn(_from,_from,0,0), wrong(false)
 {
     //ctor
 }
 
-Route::Route(City * _from, City * _to, int _startday, int _endday, vector< pair< int, Ship* > > _turns) : Turn(_from,_from,_startday,_endday), turns(_turns)
+Route::Route(City * _from, City * _to, int _startday, int _endday, vector< pair< int, Ship* > > _turns) : Turn(_from,_from,_startday,_endday), turns(_turns), wrong(false)
 {
     //ctor
 }
@@ -48,7 +48,7 @@ bool Route::TravellPass(City* c)
     {
         cout << turns[i].second->GetEndCity()->GetName() << " ";
 
-        if( turns[i].second->GetEndCity() == c )
+        if( turns[i].second->GetEndCity() == c || turns[i].second->GetStartCity() == c )
         {
             cout << endl;
             return true;

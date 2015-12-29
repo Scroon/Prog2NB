@@ -95,6 +95,7 @@ public:
         else
         {
             cout << "\nHiba a fajl megnyitasakor!\n";
+            ReadSchedule();
         }
 
         schedule.close();
@@ -149,6 +150,7 @@ public:
         else
         {
             cout << "\nHiba a fajl megnyitasakor!\n";
+            ReadCargo();
         }
 
         cargo.close();
@@ -163,7 +165,7 @@ public:
         }
         */
 
-        loads[10]->AddRoute(ships);
+        loads[0]->AddRoute(ships);
     }
 
     void Teszt()
