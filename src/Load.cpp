@@ -70,8 +70,8 @@ void Load::BuildRoute(Route * r, vector<string> ships_from, vector<string> ships
 
                 if (k == 20) break;
 
-                //string s;
-                //cin >> s;
+                string s;
+                cin >> s;
             }
         }
         else r->SetWrong();
