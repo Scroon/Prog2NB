@@ -18,6 +18,8 @@ class Load
 
         int GetID () const { return ID; }
 
+        void MakeRoute(string city_from);
+
 
 
         static int NextID()

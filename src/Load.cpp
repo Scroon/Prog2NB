@@ -9,3 +9,17 @@ Load::~Load()
 {
 
 }
+
+Load::MakeRoute(string city_from){
+
+    Route* route = new Route(city_from);
+
+    void _MakeRoute(*route){
+
+
+
+    }
+
+
+
+}
