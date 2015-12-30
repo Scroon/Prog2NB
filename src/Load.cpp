@@ -36,7 +36,7 @@ void Load::FindRoute() {
     int t = 0;
 
     cout << endl;
-    cout << "Mit: " << name << " Honnan: " << from->GetName() << " Hova: " << to->GetName() << endl;
+    cout << "ID: " << ID << " Mit: " << name << " Honnan: " << from->GetName() << " Hova: " << to->GetName() << endl;
     cout << "...";
 
     FindRouteIn(route, t);
@@ -49,7 +49,7 @@ void Load::FindRoute() {
 void Load::FindRouteIn(Route r, int &t) {
 
     t++;
-    if(t == 1000)
+    if(t == 10000)
     {
         t = 0;
         cout << ".";
