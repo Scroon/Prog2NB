@@ -10,6 +10,8 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <queue>
+#include <functional>
 
 using namespace std;
 
@@ -26,12 +28,27 @@ int convertToInt( string s )
     return i;
 }
 
-
-
 class Transport
 {
 public:
     Transport() {}
+
+    void WriteCommands(){
+
+        ofstream commands_file;
+        commands_file.open(GetFileName().c_str());
+
+        if(commands_file.good()){
+
+            if(comments.size() != 0) commands_file << comments[0] << endl;
+
+            while(!commands.empty()) {
+                commands_file << commands.top() << endl;
+                commands.pop();
+            }
+        }
+        commands_file.close();
+    }
 
     void ReadSchedule()
     {
@@ -61,6 +78,19 @@ public:
                     }
                     s.push_back(str.substr(k,str.length()-k));
 
+/*
+                    cout << endl;
+                    cout << s[0] << endl;
+                    cout << s[1] << endl;
+                    cout << s[2] << endl;
+                    cout << s[3] << endl;
+                    cout << s[4] << endl;
+                    cout << s[5] << endl;
+                    cout << s[6] << endl;
+                    cout << endl;
+*/
+
+
                     if( cities.find(s[2]) == cities.end() ) {
                         cities[s[2]] = new City(s[2]);
                     }
@@ -74,6 +104,7 @@ public:
                     ships[s[0]] = ship;
                     ship->AddToCity();
                 }
+                else comments.push_back(str);
 
                 getline(schedule,str);
             }
@@ -82,6 +113,7 @@ public:
         else
         {
             cout << "\nHiba a fajl megnyitasakor!\n";
+            ReadSchedule();
         }
 
         schedule.close();
@@ -115,10 +147,21 @@ public:
                     }
                     s.push_back(str.substr(k,str.length()-k));
 
+/*
+                    cout << endl;
+                    cout << s[0] << endl;
+                    cout << s[1] << endl;
+                    cout << s[2] << endl;
+                    cout << s[3] << endl;
+                    cout << s[4] << endl;
+                    cout << endl;
+*/
+
                     Load * load = new Load(convertToInt(s[1]),convertToInt(s[4]),s[0],cities.find(s[2])->second,cities.find(s[3])->second);
 
-                    loads[load->GetID()] = load;
+                    loads.push_back(load);
                 }
+                else comments.push_back(str);
 
                 getline(cargo,str);
             }
@@ -126,33 +169,73 @@ public:
         else
         {
             cout << "\nHiba a fajl megnyitasakor!\n";
+            ReadCargo();
         }
 
         cargo.close();
     }
 
+    void SetAllPossibleRoute ()
+    {
+        ofstream log;
+        log.open("LOG.txt");
+
+        if(comments.size() != 0) log << comments[0] << endl;
+
+        for(size_t i = 0; i < loads.size(); i++)
+        {
+            loads[i]->FindRoute();
+            //loads[i]->WriteLog(log,commands);
+        }
+    }
+
     void Teszt()
     {
+        for( size_t j = 0; j < loads.size(); j++)
+        {
+            cout << loads[j]->GetStartCity()->GetName() << endl;
+            cout << endl;
+
+            for( size_t i = 0; i < cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip().size(); i++)
+            {
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip()[i]->GetName() << "  ";
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip()[i]->GetStartCity()->GetName() << "  ";
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip()[i]->GetEndCity()->GetName() << endl;
+                cout << endl;
+            }
+            for( size_t i = 0; i < cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip().size(); i++)
+            {
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip()[i]->GetName() << "  ";
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip()[i]->GetStartCity()->GetName() << "  ";
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip()[i]->GetEndCity()->GetName() << endl;
+                cout << endl;
+            }
+        }
+
+        cout << endl;
         cout << cities.size() << endl;
         cout << ships.size() << endl;
         cout << loads.size() << endl;
     }
 
+    priority_queue<string, vector<string>, greater<string> > commands;
+
 protected:
 
     map< string, City* > cities;
     map< string, Ship* > ships;
-    map< int, Load* > loads;
+    vector< Load* > loads;
+    vector<string> comments;
 
     string GetFileName() {
         string ret;
-        cout << "\nKerem a a fajlnevet!\n";
+        cout << "\nKerem a fajlnevet!\n";
         cin >> ret;
         return ret;
     }
 };
 
-int Load::next_ID = 0;
+int Load::next_ID = -1;
 
 int main()
 {
@@ -162,8 +245,10 @@ int main()
     Transport TP;
     TP.ReadSchedule();
     TP.ReadCargo();
+    TP.SetAllPossibleRoute();
+    TP.WriteCommands();
 
-    TP.Teszt();
+    //TP.Teszt();
 
 
     return 0;

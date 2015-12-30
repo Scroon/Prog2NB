@@ -10,12 +10,12 @@ City::~City()
     //dtor
 }
 
-void City::AddToShip( const string name)
+void City::AddToShip( Ship * s)
 {
-    ships_name_to.push_back(name);
+    ships_to.push_back(s);
 }
 
-void City::AddFromShip( const string name)
+void City::AddFromShip( Ship * s)
 {
-    ships_name_from.push_back(name);
+    ships_from.push_back(s);
 }
