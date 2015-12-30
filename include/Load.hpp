@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -19,9 +20,13 @@ class Load
 
         int GetID() const { return ID; }
 
+        bool IsReady();
+
         City* GetStartCity() { return from; }
         City* GetEndCity() { return to; }
-        void AddRoute(map<string, Ship*> ships );
+
+        void SetPossibleRoutes();
+        void WriteLog(ofstream &o);
 
         static int NextID()
         {
@@ -43,10 +48,12 @@ class Load
 
         int ID;
 
-        vector< Route* > routes;
+        bool ready;
 
-        void BuildRoute( Route * r, vector<string> ships_from, vector<string> ships_to, map<string, Ship*> ships);
+        vector< Route > routes;
+        vector< string > commands;
 
+        void _SetPossibleRoutes( Route r );
 
     private:
 };

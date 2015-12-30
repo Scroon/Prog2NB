@@ -1,6 +1,6 @@
 #include "Turn.hpp"
 
-Turn::Turn(City *_from, City *_to, const int _startday, const int _endday) : from(_from), to(_to), startday(_startday), endday(_endday)
+Turn::Turn(City *_from, City *_to, const int _startday, const int _endday, const int _capacity) : from(_from), to(_to), startday(_startday), endday(_endday), capacity(_capacity), used_cap(0)
 {
     //ctor
 }
@@ -10,12 +10,17 @@ Turn::~Turn()
     //dtor
 }
 
-int Turn::GetTravellTime() const
+bool Turn::IsFull()
 {
-    return endday-startday;
+    if(used_cap < capacity) return false;
+    else return true;
 }
 
-int Turn::GetPriority() const
+void Turn::AddLoad(int amount)
 {
-    return priority;
+    if(amount <= GetFreeCap())
+        used_cap += amount;
+
+    else
+        used_cap = capacity;
 }

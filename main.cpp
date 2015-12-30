@@ -33,6 +33,25 @@ class Transport
 public:
     Transport() {}
 
+    void WriteCommands(){
+
+        ofstream commands_file;
+        commands_file.open(GetFileName().c_str());
+
+        if(commands_file.good()){
+
+            for(unsigned int i=0;i<commands.size();i++){
+
+                commands_file << commands[i];
+
+            }
+
+        }
+
+        commands_file.close
+
+    }
+
     void ReadSchedule()
     {
         ifstream schedule;
@@ -87,6 +106,7 @@ public:
                     ships[s[0]] = ship;
                     ship->AddToCity();
                 }
+                else comments.push_back(str);
 
                 getline(schedule,str);
             }
@@ -143,6 +163,7 @@ public:
 
                     loads.push_back(load);
                 }
+                else comments.push_back(str);
 
                 getline(cargo,str);
             }
@@ -158,14 +179,16 @@ public:
 
     void SetAllPossibleRoute ()
     {
-        /*
-        for(size_t i = 0; i < loads.size(); i++)
-        {
-            loads[i]->AddRoute(ships);
-        }
-        */
+        ofstream log;
+        log.open("LOG.txt");
 
-        loads[0]->AddRoute(ships);
+        if(comments.size() != 0) log << comments[0] << endl;
+
+        for(size_t i = 0; i < 1; i++)
+        {
+            loads[10]->SetPossibleRoutes();
+            loads[10]->WriteLog(log);
+        }
     }
 
     void Teszt()
@@ -175,18 +198,18 @@ public:
             cout << loads[j]->GetStartCity()->GetName() << endl;
             cout << endl;
 
-            for( size_t i = 0; i < cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShipsName().size(); i++)
+            for( size_t i = 0; i < cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip().size(); i++)
             {
-                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShipsName()[i])->second->GetName() << "  ";
-                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShipsName()[i])->second->GetStartCity()->GetName() << "  ";
-                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShipsName()[i])->second->GetEndCity()->GetName() << endl;
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip()[i]->GetName() << "  ";
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip()[i]->GetStartCity()->GetName() << "  ";
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip()[i]->GetEndCity()->GetName() << endl;
                 cout << endl;
             }
-            for( size_t i = 0; i < cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShipsName().size(); i++)
+            for( size_t i = 0; i < cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip().size(); i++)
             {
-                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShipsName()[i])->second->GetName() << "  ";
-                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShipsName()[i])->second->GetStartCity()->GetName() << "  ";
-                cout << ships.find(cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShipsName()[i])->second->GetEndCity()->GetName() << endl;
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip()[i]->GetName() << "  ";
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip()[i]->GetStartCity()->GetName() << "  ";
+                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip()[i]->GetEndCity()->GetName() << endl;
                 cout << endl;
             }
         }
@@ -202,10 +225,12 @@ protected:
     map< string, City* > cities;
     map< string, Ship* > ships;
     vector< Load* > loads;
+    vector<string> commands;
+    vector<string> comments;
 
     string GetFileName() {
         string ret;
-        cout << "\nKerem a a fajlnevet!\n";
+        cout << "\nKerem a fajlnevet!\n";
         cin >> ret;
         return ret;
     }
@@ -221,8 +246,8 @@ int main()
     Transport TP;
     TP.ReadSchedule();
     TP.ReadCargo();
-
     TP.SetAllPossibleRoute();
+    TP.WriteCommands();
 
     //TP.Teszt();
 

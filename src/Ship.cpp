@@ -11,22 +11,22 @@ Ship::~Ship()
     //dtor
 }
 
-Turn* Ship::GetTurn( const int index)
+Turn* Ship::GetTurn( const size_t index )
 {
     if(turns.find(index) == turns.end())
     {
         int start_day = startday+(index%2)*(days_there)+(index/2)*(days_back+days_there);
         int end_day = startday+((1+index)%2)*(days_there)+((1+index)/2)*(days_back+days_there);
 
-        if( index % 2 == 0) turns[index] = new Turn(from,to,start_day,end_day);
-        if( index % 2 == 1) turns[index] = new Turn(to,from,start_day,end_day);
+        if( index % 2 == 0) turns[index] = new Turn(from,to,start_day,end_day,capacity);
+        else if( index % 2 == 1) turns[index] = new Turn(to,from,start_day,end_day,capacity);
     }
 
-    return turns.find(index)->second;
+    return turns[index];
 }
 
 void Ship::AddToCity()
 {
-    to->AddToShip(name);
-    from->AddFromShip(name);
+    to->AddToShip(this);
+    from->AddFromShip(this);
 }

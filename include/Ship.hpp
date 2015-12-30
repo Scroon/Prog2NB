@@ -16,7 +16,7 @@ class Ship
         Ship(const string _name, City* &_from, City* &_to, const int _startday, const int _days_there, const int _days_back, const int _capacity);
         virtual ~Ship();
 
-        Turn* GetTurn( const int index );
+        Turn* GetTurn( const size_t index );
 
         void AddToCity();
         string GetName() { return name; }

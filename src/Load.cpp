@@ -1,6 +1,6 @@
 #include "Load.hpp"
 
-Load::Load( const int _amount, const int _bonus_time, const string _name, City *_from, City *_to) : amount(_amount), bonus_time(_bonus_time), name(_name), from(_from), to(_to)
+Load::Load( const int _amount, const int _bonus_time, const string _name, City *_from, City *_to) : amount(_amount), bonus_time(_bonus_time), name(_name), from(_from), to(_to), ready(false)
 {
     ID = Load::NextID();
 }
@@ -10,90 +10,121 @@ Load::~Load()
 
 }
 
-void Load::AddRoute(map<string, Ship*> ships )
+bool Load::IsReady()
 {
-    Route * route = new Route(from);
-
-    BuildRoute( route, route->GetEndCity()->GetFromShipsName(), route->GetEndCity()->GetToShipsName(), ships);
-
-    delete route;
-
-    cout << "A lehetseges utvonalak szama: " << routes.size() << endl;
+    if(ready) return ready;
+    else
+    {
+        float sum = 0;
+        for(size_t i = 0; i < routes.size(); i++)
+        {
+            sum += routes[i].GetFreeCap();
+        }
+        if( sum >= amount)
+        {
+            for(size_t i = 0; i < routes.size(); i++)
+            {
+                if(amount > 0) amount -= routes[i].AddLoad(amount);
+            }
+            ready = true;
+            return ready;
+        }
+        else return ready;
+    }
 }
 
-void Load::BuildRoute(Route * r, vector<string> ships_from, vector<string> ships_to,  map< string, Ship* > ships )
+void Load::WriteLog(ofstream &o)
 {
-    for( size_t i = 0; i < ships_from.size(); i++)
+    o << ID << " " << routes.size() << ready << endl;
+}
+
+void Load::SetPossibleRoutes() {
+
+    Route route(from);
+
+    cout << endl;
+    cout << "Honnan: " << from->GetName() << " Hova: " << to->GetName() << endl;
+    cout << endl;
+
+    _SetPossibleRoutes(route);
+
+    cout << endl;
+    cout << "A lehetseges utvonalak szama: " << routes.size() << endl;
+    cout << endl;
+}
+
+void Load::_SetPossibleRoutes( Route r ) {
+
+    for(size_t i = 0; i < r.GetEndCity()->GetFromShip().size(); i++)
     {
         cout << endl;
-        cout << "Honnan: " << from->GetName() << " Hova: " << to->GetName() << endl;
-        cout << endl;
+        cout << r.GetEndCity()->GetFromShip().size() << " ";
+        cout << i+1<< " ";
+        cout << r.GetEndCity()->GetFromShip()[i]->GetName() << " ";
+        cout << r.GetEndCity()->GetFromShip()[i]->GetStartCity()->GetName() << " ";
+        cout << r.GetEndCity()->GetFromShip()[i]->GetEndCity()->GetName() << endl;
 
-        cout << ships_from.size() << " " << ships_from[i] << " ";
-        cout << ships.find(ships_from[i])->second->GetStartCity()->GetName() << " ";
-        cout << ships.find(ships_from[i])->second->GetEndCity()->GetName() << endl;
-
-        if( !r->TravellPass(ships.find(ships_from[i])->second->GetEndCity()))
+        if( !r.Find(r.GetEndCity()->GetFromShip()[i]->GetEndCity()) )
         {
             int k = 0;
 
-            cout << ships.find(ships_from[i])->second->GetTurn(k)->GetEndDay() << " ";
-            cout << bonus_time << " " << k << endl;
+            cout << "Fordulo: " << k << ", fordulo erkezese: " << r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() << ", bonuszido:  " << bonus_time << endl;
 
-            while(ships.find(ships_from[i])->second->GetTurn(k)->GetEndDay() <= bonus_time)
+            while(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time && !IsReady())
             {
-                cout << ships.find(ships_from[i])->second->GetTurn(k)->GetStartDay() << " ";
-                cout << r->GetEndDay() << endl;
+                cout << "Fordulo indulasa: " << r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetStartDay() << ", csomag erkezese: " << r.GetEndDay() << endl;
 
-                if(ships.find(ships_from[i])->second->GetTurn(k)->GetStartDay() >= r->GetEndDay())
+                if(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetStartDay() >= r.GetEndDay())
                 {
-                    Route * route;
-                    route = r->Copy();
-                    route->AddTurn(k,ships.find(ships_from[i])->second);
+                    r.AddTurn(k,r.GetEndCity()->GetFromShip()[i]);
 
-                    if(route->GetEndCity() == to){
-                        cout << "Utvonal hozzaadva" << endl;
-                        routes.push_back(r);
-                    }
-                    else BuildRoute(route,route->GetEndCity()->GetFromShipsName(),route->GetEndCity()->GetToShipsName(),ships);
-
-                    if (route->IsWrong())
+                    if(!r.IsFull())
                     {
-                        cout << "Teves utvonal, torolve" << endl;
-                        delete route;
+                        if(r.GetEndCity() == to)routes.push_back(r);
+                        else _SetPossibleRoutes(r);
                     }
+
+                    r.DeleteTurn();
                 }
                 k=k+2;
 
-                cout << ships.find(ships_from[i])->second->GetTurn(k)->GetEndDay() << " ";
-                cout << bonus_time << " " << k << endl;
-
-                if (k == 20) break;
-
-                string a;
-                cin >> a;
+                cout << "\nFordulo: " << k << ", fordulo erkezese: " << r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() << ", bonuszido:  " << bonus_time << endl;
             }
         }
-        else r->SetWrong();
-        cout << endl;
     }
 /*
-    for( size_t i = 0; i < ships_to.size(); i++) {
-        cout << ships_from[i] << " 2" << endl;
-        if( !r.TravellPass(ships.find(ships_to[i])->second->GetStartCity()) )
+    for(size_t i = 0; i < r.GetEndCity()->GetToShip().size(); i++)
+    {
+        cout << endl;
+        cout << r.GetEndCity()->GetToShip().size() << " ";
+        cout << i+1<< " ";
+        cout << r.GetEndCity()->GetToShip()[i]->GetName() << " ";
+        cout << r.GetEndCity()->GetToShip()[i]->GetStartCity()->GetName() << " ";
+        cout << r.GetEndCity()->GetToShip()[i]->GetEndCity()->GetName() << endl;
+
+        if( !r.Find(r.GetEndCity()->GetToShip()[i]->GetStartCity()) )
         {
             int k = 1;
-            while(ships.find(ships_to[i])->second->GetTurn(k)->GetEndDay() <= bonus_time)
-            {
-                if(ships.find(ships_to[i])->second->GetTurn(k)->GetStartDay() >= r.GetEndDay())
-                {
-                    r.AddTurn(k,ships.find(ships_to[i])->second);
 
-                    if(r.GetEndCity() == to) routes.push_back(&r);
-                    else BuildRoute(r,r.GetEndCity()->GetFromShipsName(),r.GetEndCity()->GetToShipsName(),ships);
+            cout << "Fordulo: " << k << ", fordulo erkezese: " << r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetEndDay() << ", bonuszido:  " << bonus_time << endl;
+
+            while(r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time )
+            {
+
+                cout << "Fordulo indulasa: " << r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetStartDay() << ", csomag erkezese: " << r.GetEndDay() << endl;
+
+                if(r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetStartDay() >= r.GetEndDay())
+                {
+                    r.AddTurn(k,r.GetEndCity()->GetToShip()[i]);
+
+                    if(r.GetEndCity() == to)routes.push_back(r);
+                    else _SetPossibleRoutes(r);
+
+                    r.DeleteTurn();
                 }
-                cout << k << endl;
                 k=k+2;
+
+                cout << "\nFordulo: " << k << ", fordulo erkezese: " << r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetEndDay() << ", bonuszido:  " << bonus_time << endl;
             }
         }
     }*/

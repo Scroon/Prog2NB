@@ -6,6 +6,8 @@
 
 using namespace std;
 
+class Ship;
+
 class City
 {
     public:
@@ -14,18 +16,18 @@ class City
 
         virtual ~City();
 
-        void AddToShip( const string name);
-        void AddFromShip( const string name);
+        void AddToShip( Ship * s);
+        void AddFromShip( Ship * s);
         string GetName() const { return name; };
-        vector<string> GetFromShipsName() const { return ships_name_from; }
-        vector<string> GetToShipsName() const { return ships_name_to; }
+        vector< Ship* > GetFromShip() const { return ships_from; }
+        vector< Ship* > GetToShip() const { return ships_to; }
 
     protected:
 
     string name;
 
-    vector< string > ships_name_from;
-    vector< string > ships_name_to;
+    vector< Ship* > ships_from;
+    vector< Ship* > ships_to;
 
     private:
 };
