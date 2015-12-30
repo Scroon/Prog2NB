@@ -1,6 +1,6 @@
 #include "Route.hpp"
 
-Route::Route(City * _from) : Turn(_from,_from,0,0,80)
+Route::Route(City * _from) : from(_from), to(_from), startday(0), endday(0)
 {
     //ctor
 }
@@ -19,35 +19,46 @@ bool Route::IsFull()
     return false;
 }
 
-int Route::AddLoad( int amount)
+int Route::AddLoad( int amount, string name, int bonus )
 {
-    int free_cap;
-    if(amount > GetFreeCap())
-        free_cap = GetFreeCap();
-    else
-        free_cap = amount;
+    int cap;
+
+    if(amount > GetFreeCap()) cap = GetFreeCap();
+    else cap = amount;
+
     for(size_t i = 0; i < turns.size(); i++)
     {
-        turns[i]->AddLoad(free_cap);
+        turns[i]->AddLoad(cap);
+        string str = convertToString(turns[i]->GetStartDay()) + " " + turns[i]->GetShip()->GetName() + " " + name + " " + convertToString((bonus-turns[i]->GetEndDay())) + " " + convertToString(cap);
+        commands.push_back(str);
     }
-    return free_cap;
+
+    return amount-cap;
 }
 
 int Route::GetFreeCap()
 {
-    int min_cap = 80;
+    int cap = 80;
     for(size_t i = 0; i < turns.size(); i++)
     {
-        if(turns[i]->GetFreeCap() < min_cap) min_cap = turns[i]->GetFreeCap();
+        if(turns[i]->GetFreeCap() < cap) cap = turns[i]->GetFreeCap();
     }
-    return min_cap;
+    return cap;
+}
+
+int Route::GetCap()
+{
+    int cap = 80;
+    for(size_t i = 0; i < turns.size(); i++)
+    {
+        if(turns[i]->GetCap() < cap) cap = turns[i]->GetCap();
+    }
+    return cap;
 }
 
 void Route::AddTurn(int turn_number, Ship* ship)
 {
     turns.push_back(ship->GetTurn(turn_number));
-
-    if(capacity > turns[turns.size()-1]->GetCap()) capacity = turns[turns.size()-1]->GetCap();
 
     endday = turns[turns.size()-1]->GetEndDay();
     to = turns[turns.size()-1]->GetEndCity();
@@ -60,16 +71,9 @@ void Route::DeleteTurn()
     {
         endday = startday;
         to = from;
-        capacity = 80;
     }
     else
     {
-        int cap = 80;
-        for(size_t i = 0; i < turns.size(); i++)
-        {
-            if( cap > turns[i]->GetCap()) cap = turns[i]->GetCap();
-        }
-        capacity = cap;
         endday = turns[turns.size()-1]->GetEndDay();
         to = turns[turns.size()-1]->GetEndCity();
     }
@@ -77,19 +81,19 @@ void Route::DeleteTurn()
 
 bool Route::Find(City* c)
 {
-    cout << c->GetName() << ", " << from->GetName() << " ";
+    //cout << c->GetName() << ", " << from->GetName() << " ";
 
     for( size_t i = 0; i < turns.size(); i++)
     {
-        cout << turns[i]->GetEndCity()->GetName() << " ";
+        //cout << turns[i]->GetEndCity()->GetName() << " ";
 
         if( turns[i]->GetEndCity() == c || turns[i]->GetStartCity() == c )
         {
-            cout << endl;
+            //cout << endl;
             return true;
         }
     }
-    cout << endl;
+    //cout << endl;
     return false;
 }
 

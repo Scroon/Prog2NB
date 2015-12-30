@@ -10,6 +10,8 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <queue>
+#include <functional>
 
 using namespace std;
 
@@ -26,8 +28,6 @@ int convertToInt( string s )
     return i;
 }
 
-
-
 class Transport
 {
 public:
@@ -40,16 +40,14 @@ public:
 
         if(commands_file.good()){
 
-            for(unsigned int i=0;i<commands.size();i++){
+            if(comments.size() != 0) commands_file << comments[0] << endl;
 
-                commands_file << commands[i];
-
+            while(!commands.empty()) {
+                commands_file << commands.top() << endl;
+                commands.pop();
             }
-
         }
-
-        commands_file.close
-
+        commands_file.close();
     }
 
     void ReadSchedule()
@@ -184,10 +182,10 @@ public:
 
         if(comments.size() != 0) log << comments[0] << endl;
 
-        for(size_t i = 0; i < 1; i++)
+        for(size_t i = 0; i < loads.size(); i++)
         {
-            loads[10]->SetPossibleRoutes();
-            loads[10]->WriteLog(log);
+            loads[i]->FindRoute();
+            //loads[i]->WriteLog(log,commands);
         }
     }
 
@@ -220,12 +218,13 @@ public:
         cout << loads.size() << endl;
     }
 
+    priority_queue<string, vector<string>, greater<string> > commands;
+
 protected:
 
     map< string, City* > cities;
     map< string, Ship* > ships;
     vector< Load* > loads;
-    vector<string> commands;
     vector<string> comments;
 
     string GetFileName() {

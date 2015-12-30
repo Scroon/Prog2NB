@@ -1,6 +1,6 @@
 #include "Turn.hpp"
 
-Turn::Turn(City *_from, City *_to, const int _startday, const int _endday, const int _capacity) : from(_from), to(_to), startday(_startday), endday(_endday), capacity(_capacity), used_cap(0)
+Turn::Turn(Ship * _ship, City *_from, City *_to, const int _startday, const int _endday, const int _capacity) : ship(_ship), from(_from), to(_to), startday(_startday), endday(_endday), capacity(_capacity), used_cap(0)
 {
     //ctor
 }
@@ -18,9 +18,6 @@ bool Turn::IsFull()
 
 void Turn::AddLoad(int amount)
 {
-    if(amount <= GetFreeCap())
-        used_cap += amount;
-
-    else
-        used_cap = capacity;
+    if(amount <= GetFreeCap()) used_cap += amount;
+    else used_cap = capacity;
 }

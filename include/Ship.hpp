@@ -19,7 +19,9 @@ class Ship
         Turn* GetTurn( const size_t index );
 
         void AddToCity();
+
         string GetName() { return name; }
+
         City* GetStartCity() { return from; }
         City* GetEndCity() { return to; }
 

@@ -8,6 +8,9 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <queue>
+#include <functional>
+#include <time.h>
 
 using namespace std;
 
@@ -20,13 +23,13 @@ class Load
 
         int GetID() const { return ID; }
 
-        bool IsReady();
-
         City* GetStartCity() { return from; }
         City* GetEndCity() { return to; }
 
-        void SetPossibleRoutes();
-        void WriteLog(ofstream &o);
+        void FindRoute();
+        void WriteLog(ofstream &o, priority_queue<string, vector<string>, greater<string> > &all_commands);
+
+        bool IsReady();
 
         static int NextID()
         {
@@ -48,14 +51,9 @@ class Load
 
         int ID;
 
-        bool ready;
-
         vector< Route > routes;
-        vector< string > commands;
 
-        void _SetPossibleRoutes( Route r );
-
-    private:
+        void FindRouteIn( Route r, int &t);
 };
 
 #endif // LOAD_HPP

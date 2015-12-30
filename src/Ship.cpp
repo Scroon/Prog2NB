@@ -18,8 +18,8 @@ Turn* Ship::GetTurn( const size_t index )
         int start_day = startday+(index%2)*(days_there)+(index/2)*(days_back+days_there);
         int end_day = startday+((1+index)%2)*(days_there)+((1+index)/2)*(days_back+days_there);
 
-        if( index % 2 == 0) turns[index] = new Turn(from,to,start_day,end_day,capacity);
-        else if( index % 2 == 1) turns[index] = new Turn(to,from,start_day,end_day,capacity);
+        if( index % 2 == 0) turns[index] = new Turn(this,from,to,start_day,end_day,capacity);
+        else if( index % 2 == 1) turns[index] = new Turn(this,to,from,start_day,end_day,capacity);
     }
 
     return turns[index];
