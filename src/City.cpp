@@ -1,14 +1,8 @@
 #include "City.hpp"
 
-City::City(const string _name) : name(_name)
-{
-    //ctor
-}
+City::City(const string _name) : name(_name) {}
 
-City::~City()
-{
-    //dtor
-}
+City::~City() {}
 
 void City::AddToShip( Ship * s)
 {

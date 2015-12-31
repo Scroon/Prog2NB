@@ -1,15 +1,9 @@
 #include "Ship.hpp"
 
 Ship::Ship(const string _name, City* &_from, City* &_to, const int _startday, const int _days_there, const int _days_back, const int _capacity) :
-    name(_name), from(_from), to(_to), startday(_startday), days_there(_days_there), days_back(_days_back), capacity(_capacity)
-{
-    //ctor
-}
+    name(_name), from(_from), to(_to), startday(_startday), days_there(_days_there), days_back(_days_back), capacity(_capacity) {}
 
-Ship::~Ship()
-{
-    //dtor
-}
+Ship::~Ship() {}
 
 Turn* Ship::GetTurn( const size_t index )
 {

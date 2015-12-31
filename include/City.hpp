@@ -26,12 +26,10 @@ class City
 
     protected:
 
-    string name;
+        string name;
 
-    vector< Ship* > ships_from;
-    vector< Ship* > ships_to;
-
-    private:
+        vector< Ship* > ships_from;
+        vector< Ship* > ships_to;
 };
 
 #endif // CITY_HPP

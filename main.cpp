@@ -12,6 +12,7 @@
 #include <sstream>
 #include <queue>
 #include <functional>
+#include <exception>
 
 using namespace std;
 
@@ -33,7 +34,10 @@ class Transport
 public:
     Transport() {}
 
-    void WriteCommands(){
+    void WriteCommands()
+    {
+
+        cout << "\nA rakodasi utasitasok kiirasa.\n";
 
         ofstream commands_file;
         commands_file.open(GetFileName().c_str());
@@ -47,11 +51,15 @@ public:
                 commands.pop();
             }
         }
+        else throw 2;
+
         commands_file.close();
     }
 
     void ReadSchedule()
     {
+        cout << "\nA menetrendet tartalmazo fajl beolvasasa.\n";
+
         ifstream schedule;
         schedule.open(GetFileName().c_str());
 
@@ -76,8 +84,9 @@ public:
                             k = i+1;
                         }
                     }
-                    s.push_back(str.substr(k,str.length()-k));
+                    s.push_back(str.substr(k));
 
+                    if(s.size() < 7) throw 1;
 /*
                     cout << endl;
                     cout << s[0] << endl;
@@ -110,17 +119,15 @@ public:
             }
 
         }
-        else
-        {
-            cout << "\nHiba a fajl megnyitasakor!\n";
-            ReadSchedule();
-        }
+        else throw 2;
 
         schedule.close();
     }
 
-    void ReadCargo ()
+    void ReadCargo()
     {
+        cout << "\nA rakomanyokat tartalmazo fajl beolvasasa.\n";
+
         ifstream cargo;
         cargo.open(GetFileName().c_str());
 
@@ -145,7 +152,9 @@ public:
                             k = i+1;
                         }
                     }
-                    s.push_back(str.substr(k,str.length()-k));
+                    s.push_back(str.substr(k));
+
+                    if(s.size() < 5) throw 1;
 
 /*
                     cout << endl;
@@ -166,31 +175,28 @@ public:
                 getline(cargo,str);
             }
         }
-        else
-        {
-            cout << "\nHiba a fajl megnyitasakor!\n";
-            ReadCargo();
-        }
+        else throw 2;
 
         cargo.close();
     }
 
-    void SetAllPossibleRoute ()
+    void FindRoute()
     {
-        ofstream log;
-        log.open("LOG.txt");
-
-        if(comments.size() != 0) log << comments[0] << endl;
-
         for(size_t i = 0; i < loads.size(); i++)
         {
             loads[i]->FindRoute();
-            //loads[i]->WriteLog(log,commands);
         }
     }
 
-    void Teszt()
+    void SetRoute()
     {
+
+    }
+
+    void GetStruct()
+    {
+        cout << "\nA tarolt informaciok lekerese.\n";
+
         for( size_t j = 0; j < loads.size(); j++)
         {
             cout << loads[j]->GetStartCity()->GetName() << endl;
@@ -218,18 +224,17 @@ public:
         cout << loads.size() << endl;
     }
 
-    priority_queue<string, vector<string>, greater<string> > commands;
-
 protected:
 
     map< string, City* > cities;
     map< string, Ship* > ships;
     vector< Load* > loads;
-    vector<string> comments;
+    vector< string > comments;
+    priority_queue<string, vector<string>, greater<string> > commands;
 
     string GetFileName() {
         string ret;
-        cout << "\nKerem a fajlnevet!\n";
+        cout << "Kerem a fajlnevet: ";
         cin >> ret;
         return ret;
     }
@@ -239,17 +244,22 @@ int Load::next_ID = -1;
 
 int main()
 {
+    try
+    {
+        cout<<"Udvozoljuk a Marki_Kufcsak_Kovats Logisztikai Vallalatnal, TIHI ba a kiraly"<<endl;
 
-    cout<<"Udvozoljuk a Marki_Kufcsak_Kovats Logisztikai Vallalatnal, TIHI ba a kiraly"<<endl;
+        Transport TP;
+        TP.ReadSchedule();
+        TP.ReadCargo();
+        TP.FindRoute();
+        TP.SetRoute();
+        TP.WriteCommands();
+        TP.GetStruct();
 
-    Transport TP;
-    TP.ReadSchedule();
-    TP.ReadCargo();
-    TP.SetAllPossibleRoute();
-    TP.WriteCommands();
-
-    //TP.Teszt();
-
+        cout << "\nA program sikeresen befejezte futasat.\n";
+    }
+    catch (int e) { cout << "\nAn exception occurred. Exception Nr. " << e << "\nThe program shuts down!\n"; }
+    catch (exception& e) { cout << "\nAn exception occurred. Exception: " << e.what() << "\nThe program shuts down!\n"; }
 
     return 0;
 }

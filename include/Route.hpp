@@ -12,6 +12,7 @@ using namespace std;
 class Route
 {
     public:
+
         Route(City * _from);
         virtual ~Route();
 
@@ -32,20 +33,7 @@ class Route
         void AddTurn( int turn_number, Ship* ship );
         void DeleteTurn();
 
-        static string convertToString( int i )
-        {
-            stringstream ss;
-            string s;
-
-            ss << i;
-            ss >> s;
-
-            ss.clear();
-
-            return s;
-        }
-
-        vector< string > commands;
+        vector< string > GetCommands() const { return commands; }
 
     protected:
 
@@ -56,6 +44,7 @@ class Route
         int endday;
 
         vector< Turn* > turns;
+        vector< string > commands;
 };
 
 #endif // ROUTE_HPP

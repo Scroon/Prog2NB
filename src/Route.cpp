@@ -1,13 +1,20 @@
 #include "Route.hpp"
 
-Route::Route(City * _from) : from(_from), to(_from), startday(0), endday(0)
-{
-    //ctor
-}
+Route::Route(City * _from) : from(_from), to(_from), startday(0), endday(0) {}
 
-Route::~Route()
+Route::~Route() {}
+
+string convertToString( int i )
 {
-    //dtor
+    stringstream ss;
+    string s;
+
+    ss << i;
+    ss >> s;
+
+    ss.clear();
+
+    return s;
 }
 
 bool Route::IsFull()
@@ -81,19 +88,11 @@ void Route::DeleteTurn()
 
 bool Route::Find(City* c)
 {
-    //cout << c->GetName() << ", " << from->GetName() << " ";
-
     for( size_t i = 0; i < turns.size(); i++)
     {
-        //cout << turns[i]->GetEndCity()->GetName() << " ";
-
-        if( turns[i]->GetEndCity() == c || turns[i]->GetStartCity() == c )
-        {
-            //cout << endl;
-            return true;
-        }
+        if( turns[i]->GetEndCity() == c || turns[i]->GetStartCity() == c ) return true;
     }
-    //cout << endl;
+    if(from == c) return true;
     return false;
 }
 

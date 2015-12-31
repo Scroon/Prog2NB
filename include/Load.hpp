@@ -1,16 +1,12 @@
 #ifndef LOAD_HPP
 #define LOAD_HPP
 
-#include "City.hpp"
 #include "Route.hpp"
 
-#include <map>
 #include <vector>
 #include <iostream>
-#include <fstream>
 #include <queue>
 #include <functional>
-#include <time.h>
 
 using namespace std;
 
@@ -27,7 +23,7 @@ class Load
         City* GetEndCity() { return to; }
 
         void FindRoute();
-        void WriteLog(ofstream &o, priority_queue<string, vector<string>, greater<string> > &all_commands);
+        void GetCommands( priority_queue<string, vector<string>, greater<string> > &all_commands);
 
         bool IsReady();
 

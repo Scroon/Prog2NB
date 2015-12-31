@@ -1,14 +1,12 @@
 #include "Load.hpp"
 
-Load::Load( const int _amount, const int _bonus_time, const string _name, City *_from, City *_to) : amount(_amount), bonus_time(_bonus_time), name(_name), from(_from), to(_to)
+Load::Load( const int _amount, const int _bonus_time, const string _name, City *_from, City *_to) :
+    amount(_amount), bonus_time(_bonus_time), name(_name), from(_from), to(_to)
 {
     ID = Load::NextID();
 }
 
-Load::~Load()
-{
-
-}
+Load::~Load() {}
 
 bool Load::IsReady()
 {
@@ -16,18 +14,15 @@ bool Load::IsReady()
     else return true;
 }
 
-void Load::WriteLog(ofstream &o, priority_queue<string, vector<string>, greater<string> > &all_commands)
+void Load::GetCommands( priority_queue<string, vector<string>, greater<string> > &all_commands)
 {
-    o << name << " " << from->GetName() << " " << to->GetName() << endl;
     for(size_t i = 0; i < routes.size(); i++)
     {
-        for(size_t j = 0; j < routes[i].commands.size(); j++)
+        for(size_t j = 0; j < routes[i].GetCommands().size(); j++)
         {
-            o << routes[i].commands[j] << endl;
-            all_commands.push(routes[i].commands[j]);
+            all_commands.push(routes[i].GetCommands()[j]);
         }
     }
-    o << endl;
 }
 
 void Load::FindRoute() {
@@ -57,41 +52,22 @@ void Load::FindRouteIn(Route r, int &t) {
 
     for(size_t i = 0; i < r.GetEndCity()->GetFromShip().size(); i++)
     {
-        //cout << r.GetEndCity()->GetFromShip().size() << " ";
-        //cout << i+1<< " ";
-        //cout << r.GetEndCity()->GetFromShip()[i]->GetName() << " ";
-        //cout << r.GetEndCity()->GetFromShip()[i]->GetStartCity()->GetName() << " ";
-        //cout << r.GetEndCity()->GetFromShip()[i]->GetEndCity()->GetName() << endl;
-
         if( !r.Find(r.GetEndCity()->GetFromShip()[i]->GetEndCity()) )
         {
             int k = 0;
-
-            //cout << "Fordulo: " << k << ", fordulo erkezese: " << r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() << ", bonuszido:  " << bonus_time << endl;
-
-            while(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time /* && !IsReady()*/ )
+            while(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time)
             {
-                //cout << "Fordulo indulasa: " << r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetStartDay() << ", csomag erkezese: " << r.GetEndDay() << endl;
-
                 if(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetStartDay() >= r.GetEndDay())
                 {
                     r.AddTurn(k,r.GetEndCity()->GetFromShip()[i]);
-
                     if(!r.IsFull())
                     {
-                        if(r.GetEndCity() == to)
-                        {
-                            routes.push_back(r);
-                            //amount = routes[routes.size()-1].AddLoad(amount,name,bonus_time);
-                        }
+                        if(r.GetEndCity() == to) routes.push_back(r);
                         else FindRouteIn(r,t);
                     }
-
                     r.DeleteTurn();
                 }
                 k=k+2;
-
-                //cout << "\nFordulo: " << k << ", fordulo erkezese: " << r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() << ", bonuszido:  " << bonus_time << endl;
             }
         }
     }

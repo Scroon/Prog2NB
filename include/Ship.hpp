@@ -1,7 +1,6 @@
 #ifndef SHIP_HPP
 #define SHIP_HPP
 
-#include "City.hpp"
 #include "Turn.hpp"
 
 #include <map>
@@ -38,8 +37,6 @@ class Ship
         int capacity;
 
         map< int, Turn* > turns;
-
-    private:
 };
 
 #endif // SHIP_HPP

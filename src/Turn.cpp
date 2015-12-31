@@ -1,14 +1,9 @@
 #include "Turn.hpp"
 
-Turn::Turn(Ship * _ship, City *_from, City *_to, const int _startday, const int _endday, const int _capacity) : ship(_ship), from(_from), to(_to), startday(_startday), endday(_endday), capacity(_capacity), used_cap(0)
-{
-    //ctor
-}
+Turn::Turn(Ship * _ship, City *_from, City *_to, const int _startday, const int _endday, const int _capacity) :
+    ship(_ship), from(_from), to(_to), startday(_startday), endday(_endday), capacity(_capacity), used_cap(0) {}
 
-Turn::~Turn()
-{
-    //dtor
-}
+Turn::~Turn() {}
 
 bool Turn::IsFull()
 {

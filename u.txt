@@ -1,0 +1,1 @@
+# random input file, varosszam: 4  jaratszam: 4  rakomanyfeleszam: 10  tavolsagmin: 2  tavolsagmax: 20  mennyisegmin: 1  mennyisegmax: 50  kapacitasmin: 10  kapacitasmax: 80  randomseed: 1451212209
