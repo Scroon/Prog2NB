@@ -7,6 +7,7 @@
 #include <iostream>
 #include <queue>
 #include <functional>
+#include <fstream>
 
 using namespace std;
 
@@ -17,16 +18,16 @@ class Load
         Load(const int _amount, const int _bonus_time, const string _name, City* _from, City* _to);
         virtual ~Load();
 
+        int GetAmount() { return full_amount; }
         int GetID() const { return ID; }
         int GetFreeRouteNumber();
 
         City* GetStartCity() { return from; }
         City* GetEndCity() { return to; }
 
-        void FindRoute();
+        void FindRoute(ofstream &o, int p);
         void AddLoad();
         void GetCommands( priority_queue<string, vector<string>, greater<string> > &all_commands);
-        void _SetPossibleRoutes(Route r);
 
         bool IsReady();
 
@@ -40,6 +41,7 @@ class Load
 
         static int next_ID;
 
+        int full_amount;
         int amount;
         int bonus_time;
 
@@ -52,9 +54,7 @@ class Load
 
         vector< Route > routes;
 
-        vector< Route > poss_routes;
-
-        void FindRouteIn( Route r, int &t);
+        void FindRouteIn( Route r, int p );
 };
 
 #endif // LOAD_HPP

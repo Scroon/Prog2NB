@@ -41,28 +41,35 @@ struct CompareLoad
 class Transport
 {
 public:
-    Transport() {}
+    Transport() : profit(0), price(10), price_bonus(30) {}
 
     void WriteCommands()
     {
+        ofstream log;
+        log.open("log.txt");
+        log << "\nBonusz idon belul celba nem jutott rakomanyok szama: " << out_bonus.size();
+        log << "\nA profit: " << profit << endl;
+        log.close();
 
+        cout << "\nBonusz idon belul celba nem jutott rakomanyok szama: " << out_bonus.size();
+        cout << "\nA profit: " << profit << endl;
         cout << "\nA rakodasi utasitasok kiirasa.\n";
 
-        ofstream commands_file;
-        commands_file.open(GetFileName().c_str());
+        ofstream commands;
+        commands.open(GetFileName().c_str());
 
-        if(commands_file.good()){
+        if(commands.good()){
 
-            if(comments.size() != 0) commands_file << comments[0] << endl;
+            if(comments.size() != 0) commands << comments[0] << endl;
 
-            while(!commands.empty()) {
-                commands_file << commands.top() << endl;
-                commands.pop();
+            while(!instruction.empty()) {
+                commands << instruction.top() << endl;
+                instruction.pop();
             }
         }
         else throw 2;
 
-        commands_file.close();
+        commands.close();
     }
 
     void ReadSchedule()
@@ -191,24 +198,49 @@ public:
 
     void FindRoute()
     {
-        for(size_t i = 0; i < 10; i++)
+        cout << "\nAdd meg az utvonalakereses pontossagat: \n(pl.: 3, 83%-os célba jutas bonuszidon belul, futasido kb. 5 perc) ";
+        cin >> precision_index;
+
+        ofstream log;
+        log.open("log.txt");
+
+        if(comments.size() != 0) log << comments[0] << endl;
+
+        for(size_t i = 0; i < loads.size(); i++)
         {
-            loads[i]->FindRoute();
+            cout << "\nRakomany Nr. " << i;
+            cout << "\nCalculating...\n";
+            loads[i]->FindRoute(log, precision_index);
         }
 
-        for(size_t i = 0; i < 10; i++)
+        for(size_t i = 0; i < loads.size(); i++)
         {
             if(loads[i]->GetFreeRouteNumber() != 0) in_bonus.push(loads[i]);
             else out_bonus.push_back(loads[i]);
         }
+
+        cout << "\nA varosok szama: " << cities.size();
+        cout << "\nA hajok szama: " << ships.size();
+        cout << "\nA rakomanyok szama: " << loads.size();
+        cout << "\nEbbol bonusz idon belul celba nem jutotthatok szama: " << out_bonus.size() << endl;
+
+        GetStruct(log);
+
+        log.close();
+
+        cout << "\nPreparation of instructions...\n";
     }
 
     void SetRoute()
     {
         in_bonus.top()->AddLoad();
-        in_bonus.top()->GetCommands(commands);
+        in_bonus.top()->GetCommands(instruction);
 
-        if(in_bonus.top()->IsReady()) in_bonus.pop();
+        if(in_bonus.top()->IsReady())
+        {
+            profit += in_bonus.top()->GetAmount()*price_bonus;
+            in_bonus.pop();
+        }
 
         priority_queue<Load*, vector<Load*>, CompareLoad> temporary;
 
@@ -226,40 +258,44 @@ public:
         if(!in_bonus.empty()) SetRoute();
     }
 
-    void GetStruct()
+    void GetStruct(ofstream &o)
     {
-        cout << "\nA tarolt informaciok lekerese.\n";
+        o << "\nA tarolt informaciok lekerese.\n";
 
         for( size_t j = 0; j < loads.size(); j++)
         {
-            cout << loads[j]->GetStartCity()->GetName() << endl;
-            cout << endl;
+            o << loads[j]->GetStartCity()->GetName() << endl;
+            o << endl;
 
-            for( size_t i = 0; i < cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip().size(); i++)
+            for( size_t i = 0; i < cities[loads[j]->GetStartCity()->GetName()]->GetFromShip().size(); i++)
             {
-                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip()[i]->GetName() << "  ";
-                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip()[i]->GetStartCity()->GetName() << "  ";
-                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetFromShip()[i]->GetEndCity()->GetName() << endl;
-                cout << endl;
+                o << cities[loads[j]->GetStartCity()->GetName()]->GetFromShip()[i]->GetName() << "  ";
+                o << cities[loads[j]->GetStartCity()->GetName()]->GetFromShip()[i]->GetStartCity()->GetName() << "  ";
+                o << cities[loads[j]->GetStartCity()->GetName()]->GetFromShip()[i]->GetEndCity()->GetName() << endl;
+                o << endl;
             }
             for( size_t i = 0; i < cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip().size(); i++)
             {
-                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip()[i]->GetName() << "  ";
-                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip()[i]->GetStartCity()->GetName() << "  ";
-                cout << cities.find(loads[j]->GetStartCity()->GetName())->second->GetToShip()[i]->GetEndCity()->GetName() << endl;
-                cout << endl;
+                o << cities[loads[j]->GetStartCity()->GetName()]->GetToShip()[i]->GetName() << "  ";
+                o << cities[loads[j]->GetStartCity()->GetName()]->GetToShip()[i]->GetStartCity()->GetName() << "  ";
+                o << cities[loads[j]->GetStartCity()->GetName()]->GetToShip()[i]->GetEndCity()->GetName() << endl;
+                o << endl;
             }
         }
 
-        cout << endl;
-        cout << cities.size() << endl;
-        cout << ships.size() << endl;
-        cout << loads.size() << endl;
-        cout << "\nA bonusz idon belul celba nem jutott rakomanyok szama: " << out_bonus.size() << "\n";
+        o << "\nA varosok szama: " << cities.size();;
+        o << "\nA hajok szama: " << ships.size();
+        o << "\nA rakomanyok szama: " << loads.size();
+        o << "\nEbbol bonusz idon belul celba nem jutotthatok szama: " << out_bonus.size();
 
     }
 
 protected:
+
+    int profit;
+    int price;
+    int price_bonus;
+    int precision_index;
 
     map< string, City* > cities;
     map< string, Ship* > ships;
@@ -270,7 +306,7 @@ protected:
     vector< string > comments;
 
     priority_queue<Load*, vector<Load*>, CompareLoad> in_bonus;
-    priority_queue<string, vector<string>, greater<string> > commands;
+    priority_queue<string, vector<string>, greater<string> > instruction;
 
     string GetFileName()
     {
@@ -295,12 +331,10 @@ int main()
         TP.FindRoute();
         TP.SetRoute();
         TP.WriteCommands();
-        TP.GetStruct();
 
         cout << "\nA program sikeresen befejezte futasat.\n";
     }
     catch (int e) { cout << "\nAn exception occurred. Exception Nr. " << e << "\nThe program shuts down!\n"; }
-    catch (exception& e) { cout << "\nAn exception occurred. Exception: " << e.what() << "\nThe program shuts down!\n"; }
 
     return 0;
 }

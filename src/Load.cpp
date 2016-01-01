@@ -4,6 +4,7 @@ Load::Load( const int _amount, const int _bonus_time, const string _name, City *
     amount(_amount), bonus_time(_bonus_time), name(_name), from(_from), to(_to)
 {
     ID = Load::NextID();
+    full_amount = amount;
 }
 
 Load::~Load() {}
@@ -26,10 +27,6 @@ void Load::GetCommands( priority_queue<string, vector<string>, greater<string> >
     }
 }
 
-<<<<<<< HEAD
-void Load::FindRoute()
-{
-=======
 int Load::GetFreeRouteNumber()
 {
     int ret = 0;
@@ -43,102 +40,69 @@ int Load::GetFreeRouteNumber()
 void Load::AddLoad()
 {
     int index;
-    //size_t num = 0;
-
     for(size_t i = 0; i < routes.size(); i++)
     {
-        if(!routes[i].IsFull() /*&& (num == 0 || num > routes[i].GetSize())*/)
+        if(!routes[i].IsFull())
         {
             index = i;
         }
     }
     amount = routes[index].AddLoad(amount, name, bonus_time);
 }
->>>>>>> refs/remotes/origin/master
 
-void Load::FindRoute()
+void Load::FindRoute(ofstream &o, int p)
 {
     Route route(from);
-    int t = 0;
 
-    cout << endl;
-    cout << "ID: " << ID << " Mit: " << name << " Honnan: " << from->GetName() << " Hova: " << to->GetName() << endl;
-    cout << "...";
+    o << "\nID: " << ID << " Mit: " << name << " Honnan: " << from->GetName() << " Hova: " << to->GetName();
 
-    FindRouteIn(route, t);
+    FindRouteIn(route, p);
 
-    cout << endl;
-    cout << "A lehetseges utvonalak szama: " << routes.size() << endl;
+    o << "\nA lehetseges utvonalak szama: " << routes.size() << endl;
 }
 
-<<<<<<< HEAD
-void Load::_SetPossibleRoutes (Route route)
+void Load::FindRouteIn(Route r, int p)
 {
-    poss_routes.push_back(route);
-}
-
-
-void Load::FindRouteIn(Route r, int &t)
-{
-
-=======
-void Load::FindRouteIn(Route r, int &t)
-{
->>>>>>> refs/remotes/origin/master
-    t++;
-    if(t == 10000)
-    {
-        t = 0;
-        cout << ".";
-    }
-
     for(size_t i = 0; i < r.GetEndCity()->GetFromShip().size(); i++)
     {
         if( !r.Find(r.GetEndCity()->GetFromShip()[i]->GetEndCity()) ) /// r.Find don't find  = true
         {
             int k = 0;
-            while(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time) /// addig futunk, ameddig a bonus idõn belül leszünk
+            while(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time && k < p*2) /// addig futunk, ameddig a bonus idõn belül leszünk
             {
-                if(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetStartDay() >= r.GetEndDay()) /// ha még célba tudom juttatni
+                if(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetStartDay() >= r.GetEndDay()) /// ha a fordulo indulasakor ott van
                 {
                     r.AddTurn(k,r.GetEndCity()->GetFromShip()[i]);
-                    if(!r.IsFull()) /// ha egyetlen egy forduló sincsen tele
+                    if(!r.IsFull()) /// az utvonal nincs tele, ha egyetlen egy fordulója sincsen tele
                     {
                         if(r.GetEndCity() == to) routes.push_back(r); /// if Rout EndCity = AimCity
-                        else FindRouteIn(r,t); /// else az adott városból megyünk tovább
+                        else FindRouteIn(r,p); /// else az adott városból megyünk tovább
                     }
                     r.DeleteTurn();
                 }
-                k=k+2; /// csak az odafordulókat vizsglja
+                k=k+2; /// csak az odafordulókat vizsgalja
             }
         }
     }
 
-    for(size_t i = 0; i < r.GetEndCity()->GetToShip().size(); i++) /// visszafelé irányuló utakra is vizsgálja meg (ptlan fordulókra)
-    { /// azért, mert lehet hogy a 2. fordulóval már el fogja tudni vinni a szállítmányt a hajó
-        cout << endl;
-        cout << r.GetEndCity()->GetToShip().size() << " ";
-        cout << i+1<< " ";
-        cout << r.GetEndCity()->GetToShip()[i]->GetName() << " ";
-        cout << r.GetEndCity()->GetToShip()[i]->GetStartCity()->GetName() << " ";
-        cout << r.GetEndCity()->GetToShip()[i]->GetEndCity()->GetName() << endl;
-
+    for(size_t i = 0; i < r.GetEndCity()->GetToShip().size(); i++)  /// visszafelé irányuló utakra is vizsgálja meg (ptlan fordulókra)
+    {
         if( !r.Find(r.GetEndCity()->GetToShip()[i]->GetStartCity()) )
         {
             int k = 1;
-//            cout << "Fordulo: " << k << ", fordulo erkezese: " << r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetEndDay() << ", bonuszido:  " << bonus_time << endl;
-            while(r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time )
+            while(r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time && k < p*2+1)
             {
-                cout << "Fordulo indulasa: " << r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetStartDay() << ", csomag erkezese: " << r.GetEndDay() << endl;
                 if(r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetStartDay() >= r.GetEndDay())
                 {
                     r.AddTurn(k,r.GetEndCity()->GetToShip()[i]);
-                    if(r.GetEndCity() == to)routes.push_back(r);
-                    else _SetPossibleRoutes(r);
+                    if(!r.IsFull()) /// az utvonal nincs tele, ha egyetlen egy fordulója sincsen tele
+                    {
+                        if(r.GetEndCity() == to) routes.push_back(r); /// if Rout EndCity = AimCity
+                        else FindRouteIn(r,p); /// else az adott városból megyünk tovább
+                    }
                     r.DeleteTurn();
                 }
                 k=k+2;
-                cout << "\nFordulo: " << k << ", fordulo erkezese: " << r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetEndDay() << ", bonuszido:  " << bonus_time << endl;
             }
         }
     }
