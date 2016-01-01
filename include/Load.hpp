@@ -18,11 +18,13 @@ class Load
         virtual ~Load();
 
         int GetID() const { return ID; }
+        int GetFreeRouteNumber();
 
         City* GetStartCity() { return from; }
         City* GetEndCity() { return to; }
 
         void FindRoute();
+        void AddLoad();
         void GetCommands( priority_queue<string, vector<string>, greater<string> > &all_commands);
         void _SetPossibleRoutes(Route r);
 

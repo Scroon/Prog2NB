@@ -22,12 +22,42 @@ void Load::GetCommands( priority_queue<string, vector<string>, greater<string> >
         {
             all_commands.push(routes[i].GetCommands()[j]);
         }
+        routes[i].ClearCommands();
     }
 }
 
+<<<<<<< HEAD
 void Load::FindRoute()
 {
+=======
+int Load::GetFreeRouteNumber()
+{
+    int ret = 0;
+    for(size_t i = 0; i < routes.size(); i++)
+    {
+        if(!routes[i].IsFull()) ret++;
+    }
+    return ret;
+}
 
+void Load::AddLoad()
+{
+    int index;
+    //size_t num = 0;
+
+    for(size_t i = 0; i < routes.size(); i++)
+    {
+        if(!routes[i].IsFull() /*&& (num == 0 || num > routes[i].GetSize())*/)
+        {
+            index = i;
+        }
+    }
+    amount = routes[index].AddLoad(amount, name, bonus_time);
+}
+>>>>>>> refs/remotes/origin/master
+
+void Load::FindRoute()
+{
     Route route(from);
     int t = 0;
 
@@ -39,9 +69,9 @@ void Load::FindRoute()
 
     cout << endl;
     cout << "A lehetseges utvonalak szama: " << routes.size() << endl;
-
 }
 
+<<<<<<< HEAD
 void Load::_SetPossibleRoutes (Route route)
 {
     poss_routes.push_back(route);
@@ -51,6 +81,10 @@ void Load::_SetPossibleRoutes (Route route)
 void Load::FindRouteIn(Route r, int &t)
 {
 
+=======
+void Load::FindRouteIn(Route r, int &t)
+{
+>>>>>>> refs/remotes/origin/master
     t++;
     if(t == 10000)
     {
