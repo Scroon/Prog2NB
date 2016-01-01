@@ -26,17 +26,29 @@ bool Route::IsFull()
     return false;
 }
 
-int Route::AddLoad( int amount, string name, int bonus )
+int Route::AddLoad( int amount, string name, int bonus, int &p )
 {
     int cap;
+    int rem_bonus;
 
     if(amount > GetFreeCap()) cap = GetFreeCap();
     else cap = amount;
 
+    if(bonus-turns[turns.size()-1]->GetStartDay() < 0)
+    {
+        rem_bonus = 0;
+        p += cap*10;
+    }
+    else
+    {
+        rem_bonus = bonus-turns[turns.size()-1]->GetStartDay();
+        p += cap*30;
+    }
+
     for(size_t i = 0; i < turns.size(); i++)
     {
         turns[i]->AddLoad(cap);
-        string str = convertToString(turns[i]->GetStartDay()) + " " + turns[i]->GetShip()->GetName() + " " + name + " " + convertToString((bonus-turns[i]->GetEndDay())) + " " + convertToString(cap);
+        string str = convertToString(turns[i]->GetStartDay()) + " " + turns[i]->GetShip()->GetName() + " " + name + " " + convertToString(rem_bonus) + " " + convertToString(cap);
         commands.push_back(str);
     }
 

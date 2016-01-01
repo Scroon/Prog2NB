@@ -28,7 +28,7 @@ class Route
         City* GetStartCity() { return from; }
         City* GetEndCity() { return to; }
 
-        int AddLoad(int amount, string name, int bonus);
+        int AddLoad(int amount, string name, int bonus, int &p);
 
         size_t GetSize() { return turns.size(); }
 

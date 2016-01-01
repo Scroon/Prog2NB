@@ -11,6 +11,15 @@
 
 using namespace std;
 
+struct CompareCommands
+{
+    bool operator() (string &lhs, string &rhs)
+    {
+        if( lhs > rhs ) return true;
+        else return false;
+    }
+};
+
 class Load
 {
     public:
@@ -26,8 +35,9 @@ class Load
         City* GetEndCity() { return to; }
 
         void FindRoute(ofstream &o, int p);
-        void AddLoad();
-        void GetCommands( priority_queue<string, vector<string>, greater<string> > &all_commands);
+        void FindRouteOutBonus();
+        void AddLoad(int &p);
+        void GetCommands( priority_queue<string, vector<string>, CompareCommands> &all_commands);
 
         bool IsReady();
 
@@ -54,7 +64,8 @@ class Load
 
         vector< Route > routes;
 
-        void FindRouteIn( Route r, int p );
+        void FindRouteIn( Route &r, int p );
+        void FindRouteOutBonusIn( Route &r );
 };
 
 #endif // LOAD_HPP

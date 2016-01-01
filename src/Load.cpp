@@ -15,7 +15,7 @@ bool Load::IsReady()
     else return true;
 }
 
-void Load::GetCommands( priority_queue<string, vector<string>, greater<string> > &all_commands)
+void Load::GetCommands( priority_queue<string, vector<string>, CompareCommands> &all_commands)
 {
     for(size_t i = 0; i < routes.size(); i++)
     {
@@ -37,7 +37,7 @@ int Load::GetFreeRouteNumber()
     return ret;
 }
 
-void Load::AddLoad()
+void Load::AddLoad(int &p)
 {
     int index;
     for(size_t i = 0; i < routes.size(); i++)
@@ -47,21 +47,24 @@ void Load::AddLoad()
             index = i;
         }
     }
-    amount = routes[index].AddLoad(amount, name, bonus_time);
+    amount = routes[index].AddLoad(amount, name, bonus_time, p);
 }
 
 void Load::FindRoute(ofstream &o, int p)
 {
     Route route(from);
-
     o << "\nID: " << ID << " Mit: " << name << " Honnan: " << from->GetName() << " Hova: " << to->GetName();
-
     FindRouteIn(route, p);
-
     o << "\nA lehetseges utvonalak szama: " << routes.size() << endl;
 }
 
-void Load::FindRouteIn(Route r, int p)
+void Load::FindRouteOutBonus()
+{
+    Route route(from);
+    FindRouteOutBonusIn(route);
+}
+
+void Load::FindRouteIn(Route &r, int p)
 {
     for(size_t i = 0; i < r.GetEndCity()->GetFromShip().size(); i++)
     {
@@ -105,5 +108,37 @@ void Load::FindRouteIn(Route r, int p)
                 k=k+2;
             }
         }
+    }
+}
+
+void Load::FindRouteOutBonusIn( Route &r )
+{
+    for(size_t i = 0; i < r.GetEndCity()->GetFromShip().size(); i++)
+    {
+        if( !r.Find(r.GetEndCity()->GetFromShip()[i]->GetEndCity()) )
+        {
+            int k = 0;
+            while(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->IsFull() || r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetStartDay() < r.GetEndDay()) k+=2;
+            r.AddTurn(k,r.GetEndCity()->GetFromShip()[i]);
+            if(r.GetEndCity() == to) routes.push_back(r);
+            else FindRouteOutBonusIn(r);
+            r.DeleteTurn();
+
+        }
+        if(GetFreeRouteNumber() > 0) return;
+    }
+
+    for(size_t i = 0; i < r.GetEndCity()->GetToShip().size(); i++)
+    {
+        if( !r.Find(r.GetEndCity()->GetToShip()[i]->GetStartCity()) )
+        {
+            int k = 1;
+            while(r.GetEndCity()->GetToShip()[i]->GetTurn(k)->IsFull() || r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetStartDay() < r.GetEndDay()) k+=2;
+            r.AddTurn(k,r.GetEndCity()->GetToShip()[i]);
+            if(r.GetEndCity() == to) routes.push_back(r);
+            else FindRouteOutBonusIn(r);
+            r.DeleteTurn();
+        }
+        if(GetFreeRouteNumber() > 0) return;
     }
 }
