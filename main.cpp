@@ -256,7 +256,7 @@ int main()
         TP.WriteCommands();
         TP.GetStruct();
 
-        cout << "\nA program sikeresen befejezte futasat.\n";
+        cout << "\nA program snm,ikeresen befejezte futasat.\n";
     }
     catch (int e) { cout << "\nAn exception occurred. Exception Nr. " << e << "\nThe program shuts down!\n"; }
     catch (exception& e) { cout << "\nAn exception occurred. Exception: " << e.what() << "\nThe program shuts down!\n"; }
