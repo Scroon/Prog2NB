@@ -29,6 +29,15 @@ int convertToInt( string s )
     return i;
 }
 
+struct CompareLoad
+{
+    bool operator() (Load * lhs, Load * rhs)
+    {
+        if(lhs->GetFreeRouteNumber() > rhs->GetFreeRouteNumber()) return true;
+        else return false;
+    }
+};
+
 class Transport
 {
 public:
@@ -182,15 +191,39 @@ public:
 
     void FindRoute()
     {
-        for(size_t i = 0; i < loads.size(); i++)
+        for(size_t i = 0; i < 10; i++)
         {
             loads[i]->FindRoute();
+        }
+
+        for(size_t i = 0; i < 10; i++)
+        {
+            if(loads[i]->GetFreeRouteNumber() != 0) in_bonus.push(loads[i]);
+            else out_bonus.push_back(loads[i]);
         }
     }
 
     void SetRoute()
     {
+        in_bonus.top()->AddLoad();
+        in_bonus.top()->GetCommands(commands);
 
+        if(in_bonus.top()->IsReady()) in_bonus.pop();
+
+        priority_queue<Load*, vector<Load*>, CompareLoad> temporary;
+
+        size_t k = in_bonus.size();
+        for(size_t i = 0; i < k; i++)
+        {
+            if(in_bonus.top()->GetFreeRouteNumber() != 0) temporary.push(in_bonus.top());
+            else out_bonus.push_back(in_bonus.top());
+
+            in_bonus.pop();
+        }
+
+        in_bonus = temporary;
+
+        if(!in_bonus.empty()) SetRoute();
     }
 
     void GetStruct()
@@ -222,17 +255,25 @@ public:
         cout << cities.size() << endl;
         cout << ships.size() << endl;
         cout << loads.size() << endl;
+        cout << "\nA bonusz idon belul celba nem jutott rakomanyok szama: " << out_bonus.size() << "\n";
+
     }
 
 protected:
 
     map< string, City* > cities;
     map< string, Ship* > ships;
+
     vector< Load* > loads;
+    vector< Load* > out_bonus;
+
     vector< string > comments;
+
+    priority_queue<Load*, vector<Load*>, CompareLoad> in_bonus;
     priority_queue<string, vector<string>, greater<string> > commands;
 
-    string GetFileName() {
+    string GetFileName()
+    {
         string ret;
         cout << "Kerem a fajlnevet: ";
         cin >> ret;

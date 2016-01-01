@@ -30,8 +30,12 @@ class Route
 
         int AddLoad(int amount, string name, int bonus);
 
+        size_t GetSize() { return turns.size(); }
+
         void AddTurn( int turn_number, Ship* ship );
         void DeleteTurn();
+
+        void ClearCommands() { commands.clear(); }
 
         vector< string > GetCommands() const { return commands; }
 
