@@ -24,6 +24,7 @@ class Load
 
         void FindRoute();
         void GetCommands( priority_queue<string, vector<string>, greater<string> > &all_commands);
+        void _SetPossibleRoutes(Route r);
 
         bool IsReady();
 
@@ -48,6 +49,8 @@ class Load
         int ID;
 
         vector< Route > routes;
+
+        vector< Route > poss_routes;
 
         void FindRouteIn( Route r, int &t);
 };
