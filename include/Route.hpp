@@ -49,6 +49,19 @@ class Route
 
         vector< Turn* > turns;
         vector< string > commands;
+
+        string convertToString( int i )
+        {
+            stringstream ss;
+            string s;
+
+            ss << i;
+            ss >> s;
+
+            ss.clear();
+
+            return s;
+        }
 };
 
 #endif // ROUTE_HPP

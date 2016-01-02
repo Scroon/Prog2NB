@@ -50,28 +50,48 @@ void Load::AddLoad(int &p)
     amount = routes[index].AddLoad(amount, name, bonus_time, p);
 }
 
-void Load::FindRoute(ofstream &o, int p)
+void Load::FindRoute(ofstream &o, int precision, bool out_bonus)
 {
-    Route route(from);
+    int k = 1;
+    while(out_bonus && GetFreeRouteNumber() == 0)
+    {
+        k++;
+        Route route(from);
+        FindRouteIn(route, precision, k, out_bonus);
+    }
+
     o << "\nID: " << ID << " Mit: " << name << " Honnan: " << from->GetName() << " Hova: " << to->GetName();
-    FindRouteIn(route, p);
-    o << "\nA lehetseges utvonalak szama: " << routes.size() << endl;
+
+    if(!out_bonus)
+    {
+        Route route(from);
+        FindRouteIn(route, precision, k, out_bonus);
+        o << "A lehetseges utvonalak szama: " << routes.size() << endl;
+    }
 }
 
-void Load::FindRouteOutBonus()
+bool Load::GetPrecision(bool is_off, int precision, int turn_number, int bonus_multiply)
 {
-    Route route(from);
-    FindRouteOutBonusIn(route);
+        if(is_off)
+        {
+            if(turn_number < (precision+bonus_multiply)*2) return true;
+            else return false;
+        }
+        else
+        {
+            if(turn_number < precision*2) return true;
+            else return false;
+        }
 }
 
-void Load::FindRouteIn(Route &r, int p)
+void Load::FindRouteIn(Route &r, int precision, int bonus_multiply, bool out_bonus)
 {
     for(size_t i = 0; i < r.GetEndCity()->GetFromShip().size(); i++)
     {
         if( !r.Find(r.GetEndCity()->GetFromShip()[i]->GetEndCity()) ) /// r.Find don't find  = true
         {
             int k = 0;
-            while(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time && k < p*2) /// addig futunk, ameddig a bonus idõn belül leszünk
+            while(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time*bonus_multiply && GetPrecision(out_bonus,precision,k,bonus_multiply)) /// addig futunk, ameddig a bonus idõn belül leszünk
             {
                 if(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetStartDay() >= r.GetEndDay()) /// ha a fordulo indulasakor ott van
                 {
@@ -79,7 +99,7 @@ void Load::FindRouteIn(Route &r, int p)
                     if(!r.IsFull()) /// az utvonal nincs tele, ha egyetlen egy fordulója sincsen tele
                     {
                         if(r.GetEndCity() == to) routes.push_back(r); /// if Rout EndCity = AimCity
-                        else FindRouteIn(r,p); /// else az adott városból megyünk tovább
+                        else FindRouteIn(r,precision,bonus_multiply,out_bonus); /// else az adott városból megyünk tovább
                     }
                     r.DeleteTurn();
                 }
@@ -93,7 +113,7 @@ void Load::FindRouteIn(Route &r, int p)
         if( !r.Find(r.GetEndCity()->GetToShip()[i]->GetStartCity()) )
         {
             int k = 1;
-            while(r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time && k < p*2+1)
+            while(r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetEndDay() <= bonus_time*bonus_multiply && GetPrecision(out_bonus,precision,k,bonus_multiply))
             {
                 if(r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetStartDay() >= r.GetEndDay())
                 {
@@ -101,44 +121,12 @@ void Load::FindRouteIn(Route &r, int p)
                     if(!r.IsFull()) /// az utvonal nincs tele, ha egyetlen egy fordulója sincsen tele
                     {
                         if(r.GetEndCity() == to) routes.push_back(r); /// if Rout EndCity = AimCity
-                        else FindRouteIn(r,p); /// else az adott városból megyünk tovább
+                        else FindRouteIn(r,precision,bonus_multiply,out_bonus); /// else az adott városból megyünk tovább
                     }
                     r.DeleteTurn();
                 }
                 k=k+2;
             }
         }
-    }
-}
-
-void Load::FindRouteOutBonusIn( Route &r )
-{
-    for(size_t i = 0; i < r.GetEndCity()->GetFromShip().size(); i++)
-    {
-        if( !r.Find(r.GetEndCity()->GetFromShip()[i]->GetEndCity()) )
-        {
-            int k = 0;
-            while(r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->IsFull() || r.GetEndCity()->GetFromShip()[i]->GetTurn(k)->GetStartDay() < r.GetEndDay()) k+=2;
-            r.AddTurn(k,r.GetEndCity()->GetFromShip()[i]);
-            if(r.GetEndCity() == to) routes.push_back(r);
-            else FindRouteOutBonusIn(r);
-            r.DeleteTurn();
-
-        }
-        if(GetFreeRouteNumber() > 0) return;
-    }
-
-    for(size_t i = 0; i < r.GetEndCity()->GetToShip().size(); i++)
-    {
-        if( !r.Find(r.GetEndCity()->GetToShip()[i]->GetStartCity()) )
-        {
-            int k = 1;
-            while(r.GetEndCity()->GetToShip()[i]->GetTurn(k)->IsFull() || r.GetEndCity()->GetToShip()[i]->GetTurn(k)->GetStartDay() < r.GetEndDay()) k+=2;
-            r.AddTurn(k,r.GetEndCity()->GetToShip()[i]);
-            if(r.GetEndCity() == to) routes.push_back(r);
-            else FindRouteOutBonusIn(r);
-            r.DeleteTurn();
-        }
-        if(GetFreeRouteNumber() > 0) return;
     }
 }

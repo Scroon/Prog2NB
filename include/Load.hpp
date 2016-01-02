@@ -11,11 +11,36 @@
 
 using namespace std;
 
+
+
 struct CompareCommands
 {
+    int convertToInt( string s )
+    {
+        stringstream ss;
+        int i;
+
+        ss << s;
+        ss >> i;
+
+        ss.clear();
+
+        return i;
+    }
+
     bool operator() (string &lhs, string &rhs)
     {
-        if( lhs > rhs ) return true;
+        int e, m;
+
+        for( size_t i = 0; i < lhs.length(); i++)
+            if( lhs[i] == ' ' )
+                e = CompareCommands::convertToInt(lhs.substr(0,i));
+
+        for( size_t i = 0; i < rhs.length(); i++)
+            if( rhs[i] == ' ' )
+                m = CompareCommands::convertToInt(rhs.substr(0,i));
+
+        if( e > m ) return true;
         else return false;
     }
 };
@@ -34,12 +59,12 @@ class Load
         City* GetStartCity() { return from; }
         City* GetEndCity() { return to; }
 
-        void FindRoute(ofstream &o, int p);
-        void FindRouteOutBonus();
+        void FindRoute(ofstream &o, int precision, bool out_bonus);
         void AddLoad(int &p);
         void GetCommands( priority_queue<string, vector<string>, CompareCommands> &all_commands);
 
         bool IsReady();
+        bool GetPrecision(bool is_off, int precision, int turn_number, int bonus_multiply);
 
         static int NextID()
         {
@@ -64,8 +89,7 @@ class Load
 
         vector< Route > routes;
 
-        void FindRouteIn( Route &r, int p );
-        void FindRouteOutBonusIn( Route &r );
+        void FindRouteIn(Route &r, int precision, int bonus_multiply, bool out_bonus);
 };
 
 #endif // LOAD_HPP

@@ -4,19 +4,6 @@ Route::Route(City * _from) : from(_from), to(_from), startday(0), endday(0) {}
 
 Route::~Route() {}
 
-string convertToString( int i )
-{
-    stringstream ss;
-    string s;
-
-    ss << i;
-    ss >> s;
-
-    ss.clear();
-
-    return s;
-}
-
 bool Route::IsFull()
 {
     for(size_t i = 0; i < turns.size(); i++)

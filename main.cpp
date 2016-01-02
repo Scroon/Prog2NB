@@ -16,19 +16,6 @@
 
 using namespace std;
 
-int convertToInt( string s )
-{
-    stringstream ss;
-    int i;
-
-    ss << s;
-    ss >> i;
-
-    ss.clear();
-
-    return i;
-}
-
 struct CompareLoad
 {
     bool operator() (Load * lhs, Load * rhs)
@@ -46,6 +33,11 @@ public:
 
     void WriteCommands()
     {
+        for(size_t i = 0; i < loads.size(); i++)
+        {
+            loads[i]->GetCommands(instruction);
+        }
+
         cout << "\nA rakodasi utasitasok kiirasa.\n";
 
         ofstream commands;
@@ -96,18 +88,6 @@ public:
                     s.push_back(str.substr(k));
 
                     if(s.size() < 7) throw 1;
-/*
-                    cout << endl;
-                    cout << s[0] << endl;
-                    cout << s[1] << endl;
-                    cout << s[2] << endl;
-                    cout << s[3] << endl;
-                    cout << s[4] << endl;
-                    cout << s[5] << endl;
-                    cout << s[6] << endl;
-                    cout << endl;
-*/
-
 
                     if( cities.find(s[2]) == cities.end() ) {
                         cities[s[2]] = new City(s[2]);
@@ -165,16 +145,6 @@ public:
 
                     if(s.size() < 5) throw 1;
 
-/*
-                    cout << endl;
-                    cout << s[0] << endl;
-                    cout << s[1] << endl;
-                    cout << s[2] << endl;
-                    cout << s[3] << endl;
-                    cout << s[4] << endl;
-                    cout << endl;
-*/
-
                     Load * load = new Load(convertToInt(s[1]),convertToInt(s[4]),s[0],cities.find(s[2])->second,cities.find(s[3])->second);
 
                     loads.push_back(load);
@@ -196,11 +166,12 @@ public:
 
         if(comments.size() != 0) log << comments[0] << endl;
 
+        GetStruct();
+
         for(size_t i = 0; i < loads.size(); i++)
         {
-            cout << "\nRakomany Nr. " << i;
-            cout << "\nCalculating...\n";
-            loads[i]->FindRoute(log, precision_index);
+            cout << "\nRakomany Nr. " << i << " Calculating...\n";
+            loads[i]->FindRoute(log, precision_index, false);
         }
 
         for(size_t i = 0; i < loads.size(); i++)
@@ -209,22 +180,26 @@ public:
             else out_bonus.push(loads[i]);
         }
 
-        GetStruct();
-
         cout << "\nA varosok szama: " << cities.size();
         cout << "\nA hajok szama: " << ships.size();
         cout << "\nA rakomanyok szama: " << loads.size();
-        cout << "\nEbbol bonusz idon belul celba nem jutatthatok szama: " << out_bonus.size();
+        cout << "\nA pontossagi index: " << precision_index << endl;
+        cout << "\nBonusz idon belul celba nem jutatthato rakomanyok szama: " << out_bonus.size() << endl;
+
+        log << "\nA varosok szama: " << cities.size();;
+        log << "\nA hajok szama: " << ships.size();
+        log << "\nA rakomanyok szama: " << loads.size();
+        log << "\nA pontossagi index: " << precision_index << endl;
+        log << "\nBonusz idon belul celba nem jutatthato rakomanyok szama: " << out_bonus.size();
     }
 
     void SetRoute()
     {
-        cout << "\nPreparation of Instructions Nr. 1 ...\n";
+        cout << "\nPreparation of Instructions In Bonus Time ...\n";
 
         while(!in_bonus.empty())
         {
             in_bonus.top()->AddLoad(profit);
-            in_bonus.top()->GetCommands(instruction);
 
             if(in_bonus.top()->IsReady()) in_bonus.pop();
 
@@ -241,23 +216,25 @@ public:
             in_bonus = temporary;
         }
 
-        log << "\nBonusz idon belul celba nem jutott rakomanyok szama: " << out_bonus.size();
+        log << "\nBonusz idon belul celba nem jutott rakomanyok szama: " << out_bonus.size() << endl;
+
         cout << "\nBonusz idon belul celba nem jutott rakomanyok szama: " << out_bonus.size() << endl;
 
-        cout << "\nPreparation of Instructions Nr. 2 ...\n";
+        cout << "\nPreparation of Instructions Out Bonus Time ...\n";
 
-        /*while(!out_bonus.empty())
+        while(!out_bonus.empty())
         {
-            out_bonus.front()->FindRouteOutBonus();
+            out_bonus.front()->FindRoute(log,precision_index,true);
             out_bonus.front()->AddLoad(profit);
-            out_bonus.front()->GetCommands(instruction);
 
             if(out_bonus.front()->IsReady()) out_bonus.pop();
-        }*/
+        }
 
-        log << "\nCelba jutott rakomanyok szama: " << loads.size()-out_bonus.size() << endl;
+        log << endl;
+        log << "\nCelba nem jutott rakomanyok szama: " << out_bonus.size() << endl;
         log << "\nA profit: " << profit << endl;
-        cout << "\nCelba jutott rakomanyok szama: " << loads.size()-out_bonus.size() << endl;
+
+        cout << "\nCelba nem jutott rakomanyok szama: " << out_bonus.size() << endl;
         cout << "\nA profit: " << profit << endl;
     }
 
@@ -283,12 +260,6 @@ public:
                 log << endl;
             }
         }
-
-        log << "\nA varosok szama: " << cities.size();;
-        log << "\nA hajok szama: " << ships.size();
-        log << "\nA rakomanyok szama: " << loads.size();
-        log << "\nEbbol bonusz idon belul celba nem jutatthatok szama: " << out_bonus.size() << endl;
-
     }
 
 protected:
@@ -317,6 +288,19 @@ protected:
         cout << "Kerem a fajlnevet: ";
         cin >> ret;
         return ret;
+    }
+
+    int convertToInt( string s )
+    {
+        stringstream ss;
+        int i;
+
+        ss << s;
+        ss >> i;
+
+        ss.clear();
+
+        return i;
     }
 };
 
