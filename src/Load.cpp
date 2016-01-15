@@ -39,15 +39,18 @@ int Load::GetFreeRouteNumber()
 
 void Load::AddLoad(int &p)
 {
-    int index;
+    int index = -1;
+
+
     for(size_t i = 0; i < routes.size(); i++)
     {
         if(!routes[i].IsFull())
         {
-            index = i;
+            if(index == -1 || routes[i].GetEndDay() < routes[index].GetEndDay()) index = i;
         }
     }
-    amount = routes[index].AddLoad(amount, name, bonus_time, p);
+
+    if(index != -1) amount = routes[index].AddLoad(amount, name, bonus_time, p);
 }
 
 void Load::FindRoute(ofstream &o, int precision, bool out_bonus)
